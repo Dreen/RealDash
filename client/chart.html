@@ -1,0 +1,126 @@
+<html>
+<head>
+<style>
+td,th{
+    text-align:center;
+    width:50px;
+    border:1px solid #000;
+    padding:2px;
+    }
+th{
+    background-color:#ccc;
+}
+div,td,th{
+    font-family:Helvetica;
+    font-size:12px;
+    }
+table{
+    border:1px solid #aaa;
+    }
+#preload{
+    display: none;
+    }
+#precision{
+    width:20px;
+}
+td.rat_lo{
+    border: 2px solid black;
+    background-color: #00ff00;
+    }
+td.rat_hi{
+    border: 2px solid black;
+    background-color: #00b0f0;
+    }
+</style>
+<script type="text/javascript">
+function def(variable, defaultValue)
+{
+    return (typeof variable === "undefined") ? defaultValue : variable;
+}
+</script>
+<script type="text/javascript" src="lib/jquery.js"></script>
+<script type="text/javascript" src="lib/json2.js"></script>
+<script type="text/javascript" src="lib/wsclient.php"></script>
+<script type="text/javascript" src="lib/bstable.js"></script>
+<script type="text/javascript">
+$(function(){
+	var tbl = new BSTable();
+});
+</script>
+</head>
+<body>
+	<div><table id="tbl" cellspacing="1">
+		<tr id="tbl_leg">
+		<th id="tbl_leg_exc">exchange</td>
+		<th id="tbl_leg_var">var</td>
+		<th id="tbl_leg_rla">rec/la</td>
+		<th id="tbl_leg_low">low</td>
+		<th id="tbl_leg_buy">buy</td>
+		<th id="tbl_leg_sel">sell</td></tr>
+		<tr id="tbl_int_gbp">
+		<th id="tbl_int_gbp_exc" rowspan="3">Int</td>
+		<td id="tbl_int_gbp_var">GBP</td>
+		<td id="tbl_int_gbp_rla">-- <img src="img/change_blank.gif" id="img_int_gbp_rla" /></td>
+		<td id="tbl_int_gbp_low">-- <img src="img/change_blank.gif" id="img_int_gbp_low" /></td>
+		<td id="tbl_int_gbp_buy">-- <img src="img/change_blank.gif" id="img_int_gbp_buy" /></td>
+		<td id="tbl_int_gbp_sel">-- <img src="img/change_blank.gif" id="img_int_gbp_sel" /></td></tr>
+		<tr id="tbl_int_pln">
+		<td id="tbl_int_pln_var">PLN</td>
+		<td id="tbl_int_pln_rla">-- <img src="img/change_blank.gif" id="img_int_pln_rla" /></td>
+		<td id="tbl_int_pln_low">-- <img src="img/change_blank.gif" id="img_int_pln_low" /></td>
+		<td id="tbl_int_pln_buy">-- <img src="img/change_blank.gif" id="img_int_pln_buy" /></td>
+		<td id="tbl_int_pln_sel">-- <img src="img/change_blank.gif" id="img_int_pln_sel" /></td></tr>
+		<tr id="tbl_int_rat">
+		<td id="tbl_int_rat_var">Rate</td>
+		<td id="tbl_int_rat_rla">-- <img src="img/change_blank.gif" id="img_int_rat_rla" /></td>
+		<td id="tbl_int_rat_low">-- <img src="img/change_blank.gif" id="img_int_rat_low" /></td>
+		<td id="tbl_int_rat_buy">-- <img src="img/change_blank.gif" id="img_int_rat_buy" /></td>
+		<td id="tbl_int_rat_sel">-- <img src="img/change_blank.gif" id="img_int_rat_sel" /></td></tr>
+		<tr id="tbl_mtg_gbp">
+		<th id="tbl_mtg_gbp_exc" rowspan="3">MG</td>
+		<td id="tbl_mtg_gbp_var">GBP</td>
+		<td id="tbl_mtg_gbp_rla">-- <img src="img/change_blank.gif" id="img_mtg_gbp_rla" /></td>
+		<td id="tbl_mtg_gbp_low">-- <img src="img/change_blank.gif" id="img_mtg_gbp_low" /></td>
+		<td id="tbl_mtg_gbp_buy">-- <img src="img/change_blank.gif" id="img_mtg_gbp_buy" /></td>
+		<td id="tbl_mtg_gbp_sel">-- <img src="img/change_blank.gif" id="img_mtg_gbp_sel" /></td></tr>
+		<tr id="tbl_mtg_pln">
+		<td id="tbl_mtg_pln_var">PLN</td>
+		<td id="tbl_mtg_pln_rla">-- <img src="img/change_blank.gif" id="img_mtg_pln_rla" /></td>
+		<td id="tbl_mtg_pln_low">-- <img src="img/change_blank.gif" id="img_mtg_pln_low" /></td>
+		<td id="tbl_mtg_pln_buy">-- <img src="img/change_blank.gif" id="img_mtg_pln_buy" /></td>
+		<td id="tbl_mtg_pln_sel">-- <img src="img/change_blank.gif" id="img_mtg_pln_sel" /></td></tr>
+		<tr id="tbl_mtg_rat">
+		<td id="tbl_mtg_rat_var">Rate</td>
+		<td id="tbl_mtg_rat_rla">-- <img src="img/change_blank.gif" id="img_mtg_rat_rla" /></td>
+		<td id="tbl_mtg_rat_low">-- <img src="img/change_blank.gif" id="img_mtg_rat_low" /></td>
+		<td id="tbl_mtg_rat_buy">-- <img src="img/change_blank.gif" id="img_mtg_rat_buy" /></td>
+		<td id="tbl_mtg_rat_sel">-- <img src="img/change_blank.gif" id="img_mtg_rat_sel" /></td></tr>
+		<tr id="tbl_img">
+		<th id="tbl_img_exc">Int - MG</td>
+		<td id="tbl_img_var">Rate</td>
+		<td id="tbl_img_rla">-- <img 	 src="img/change_blank.gif" id="img_img_rla" /></td>
+		<td id="tbl_img_low">-- <img 	 src="img/change_blank.gif" id="img_img_low" /></td>
+		<td id="tbl_img_buy">-- <img 	 src="img/change_blank.gif" id="img_img_buy" /></td>
+		<td id="tbl_img_sel">-- <img 	 src="img/change_blank.gif" id="img_img_sel" /></td></tr>
+		<tr id="tbl_mgi">
+		<th id="tbl_mgi_exc">MG - Int</td>
+		<td id="tbl_mgi_var">Rate</td>
+		<td id="tbl_mgi_rla">-- <img 	 src="img/change_blank.gif" id="img_mgi_rla" /></td>
+		<td id="tbl_mgi_low">-- <img	 src="img/change_blank.gif" id="img_mgi_low" /></td>
+		<td id="tbl_mgi_buy">-- <img 	 src="img/change_blank.gif" id="img_mgi_buy" /></td>
+		<td id="tbl_mgi_sel">-- <img 	 src="img/change_blank.gif" id="img_mgi_sel" /></td></tr>
+	</table>
+	<br />
+	Precision: <input type="text" id="precision" value="2" />
+	<br />
+	<input type="Button" value="Disconnect" id="disconnect" />
+	</div>
+	<br />
+	<div id="preload">
+		<img src="img/change_up.gif" />
+		<img src="img/change_down.gif" />
+		<img src="img/change_none.gif" />
+	</div>
+	</div>
+</body>
+</html>

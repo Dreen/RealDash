@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<style>
+#container-main {
+	background-color: #fff;
+	height: 100%;
+}
+#container-tblModel {
+	margin: 5px;
+	padding: 5px;
+}
+#navbar-top {
+	margin: 5px;
+}
+#btn-connect {
+	margin-top: 7px;
+}
+#btn-savedData {
+	font-weight:bold;
+	display: block;
+	text-align:left;
+}
+#savedData ul li div{
+	display: inline;
+}
+#savedData ul li:nth-child(2){
+	padding-left: 5em;
+}
+#label-working {
+	position: absolute;
+	top: 0px;
+}
+body, html {
+	background-color: #fff;
+	height: 100%;
+}
+.centerised {
+	text-align:center;
+}
+.list-horizontal {
+	list-style: none;
+}
+.list-horizontal li {
+	display: inline;
+}
+.alert .badge {
+    margin-right: 10px;
+}
+</style>
+<script type="text/javascript">
+/********************************************\
+|************** APP SETTINGS ****************|
+\********************************************/
+
+var INTERVAL_COOKIEDATA = 2;
+var INTERVAL_SERVERDATA = 6;
+var INTERVAL_HIDEALERTS = 4;
+
+
+/********************************************/
+
+
+function def(variable, defaultValue)
+{
+    return (typeof variable === "undefined") ? defaultValue : variable;
+}
+</script>
+<script type="text/javascript" src="lib/cookies.js"></script>
+<script type="text/javascript" src="lib/jquery.js"></script>
+<script type="text/javascript" src="lib/json2.js"></script>
+<script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="lib/wsclient.php"></script>
+<script type="text/javascript" src="lib/APIBrowser.js"></script>
+<script type="text/javascript">
+var ab;
+$(function(){
+	ab = new APIBrowser();
+});
+</script>
+</head>
+<body>
+<span class="label label-success" id="label-working">Working...</span>
+<div class="container" id="container-main">
+
+	<!-- Navbar Top //-->
+	
+	<div class="navbar" id="navbar-top">
+		<div class="navbar-inner">
+			<a class="brand" href="APIBrowser.html"><strong>APIBrowser</strong></a>
+			<ul class="nav">
+				<li class="divider-vertical"></li>
+				<li class="dropdown" id="btn-model-dropdown">
+					<a class="dropdown-toggle" data-toggle="dropdown" data-target="#"><i class="icon-list"></i> Model <b class="caret"></b></a>
+					<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+						<li><a href="#" tabindex="-1" id="mnu-model-select">Select Model</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-model-">Stuff</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-model-">Stuff</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-model-">Stuff</a></li>
+					</ul>
+				</li>
+				<li class="divider-vertical"></li>
+				<li><a href="#settingsModal" id="btn-settings" role="button" data-toggle="modal"><i class="icon-wrench"></i> Settings</a></li>
+				<li class="divider-vertical"></li>
+				<li><a href="#helpModal" id="btn-help" role="button" data-toggle="modal"><i class="icon-question-sign"></i> Help</a></li>
+				<li class="divider-vertical"></li>
+			</ul>
+			<div class="pull-right">
+				<button id="btn-connect" class="btn btn-primary btn-small">Connect</button>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Help Modal Window //-->
+	
+	<div id="helpModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 id="helpModalLabel">Help</h3>
+		</div>
+		<div class="modal-body">
+			Stuff and bits
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primar" data-dismiss="modal" aria-hidden="true">Close</button>
+		</div>
+	</div>
+	
+	<!-- Settings Modal Window //-->
+	
+	<div id="settingsModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 id="settingsModalLabel">Settings</h3>
+		</div>
+		<div class="modal-body">
+			Stuff and bits
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primar" data-dismiss="modal" aria-hidden="true">Close</button>
+			<button class="btn btn-primary">Save changes</button>
+		</div>
+	</div>
+	<div id="alerts"></div>
+	
+	<!-- Main Area Interface - Model Selection //-->
+	
+	<div id="container-tblModel" class="m-a-c">
+		<table class="table table-bordered table-condensed table-hover" id="tblModel">
+		</table>
+		<button id="btn-selectModel" class="btn btn-large">Select Model</button>
+	</div>
+	
+	<div class="clearfix"><br /></div>
+	
+	<!-- Saved Data Window //-->
+	
+	<div class="well well-small">
+		<a href="#" class="btn btn-link" id="btn-savedData"><i class="icon-chevron-down"></i>Saved Data</a>
+		<div id="savedData">
+			<ul class="centerised list-horizontal">
+				<li>
+					<div class="btn-group">
+						<button id="btn-SelectAllCMSaves"		class="btn btn-mini btn-info">Select All</button>
+						<button id="btn-DeselectAllCMSaves"		class="btn btn-mini btn-info">Deselect All</button>
+					</div>
+				</li>
+				<li>Selected:</li>
+				<li>
+					<div class="btn-group">
+						<button id="btn-ClearCMSaves"			class="btn btn-mini btn-info">Clear</button>
+						<button id="btn-RestoreCMSaves"			class="btn btn-mini btn-info">Restore</button>
+						<button id="btn-RefreshCMSaves"			class="btn btn-mini btn-info">Force Refresh</button>
+					</div>
+				</li>
+			</ul>
+			<label class="checkbox"><input type="checkbox" id="chkbx-cookiedata" />Cookie data: <span id="cookiedata"></span></label>
+			<label class="checkbox"><input type="checkbox" id="chkbx-serverdata" />Server data: <span id="serverdata"></span></label>
+		</div>
+	</div>
+</div>
+</body>
+</html>
