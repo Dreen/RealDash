@@ -1,4 +1,5 @@
 from httpBot import httpBot
+from api import api
 
 import json
 from time import time
@@ -7,12 +8,12 @@ from hmac import HMAC
 from base64 import b64encode, b64decode
 from urllib import urlencode
 
-class mtgox:
+class mtgox(api):
 	# Settings
-	API_KEY	= ''
-	SECRET	= b64decode('')
-	LOGIN	= ''
-	PASS	= ''
+	API_KEY	= '360e28ab-b5a8-40fa-e11c-25d271947c51'
+	SECRET	= b64decode('JNUmav6DNbBLgPJLfVCRmNhDGbpzIKbhIe2ZgxAt0RsJNy45wNLModKURZ3j5O9C7XlxjLbk8XkFbPrydeQnJQ==')
+	LOGIN	= 'Dreen'
+	PASS	= 'a&_K4+j%O-}<4BQ'
 	VERSION	= '1'
 	
 	# Locations
@@ -20,9 +21,8 @@ class mtgox:
 	API		= HOME + 'api/'
 	APIAUTH	= API + VERSION + '/'
 	
-	def __init__(self, verbose = False, toUTF = True):
-		self.verbose = verbose
-		self.toUTF = toUTF
+	
+	
 	
 	
 	# Data
@@ -57,16 +57,6 @@ class mtgox:
 			return self.convert(json.loads(r.go()))
 		else:
 			return json.loads(r.go())
-	
-	def convert(self, input):
-		if isinstance(input, dict):
-			return dict((self.convert(key), self.convert(value)) for key, value in input.iteritems())
-		elif isinstance(input, list):
-			return [self.convert(element) for element in input]
-		elif isinstance(input, unicode):
-			return input.encode('utf-8')
-		else:
-			return input
 	
 	def currency(self, currency, call_name, since=0):
 		return self.request('BTC' + self.SYMBOLS[currency] + '/' + call_name, get={'since':str(since)})

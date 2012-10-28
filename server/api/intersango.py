@@ -1,13 +1,15 @@
 from httpBot import httpBot
+from api import api
+
 import json
 import decimal
 import re
 
-class intersango:
+class intersango(api):
 	# Settings
-	API_KEY	= {'api_key':''}
-	LOGIN	= ''
-	PASS	= ''
+	API_KEY	= {'api_key':'8a8aec137cb271d8f767dd7aca6e79b3'}
+	LOGIN	= 'greg.balaga@gmail.com'
+	PASS	= '82[fD650lh/2y57'
 	VERSION	= '0.1'
 	
 	# Locations
@@ -27,10 +29,6 @@ class intersango:
 	fill_or_kill = 'fok'
 	immediate_or_cancel = 'ioc'
 
-	def __init__(self, verbose = False, toUTF = True):
-		self.verbose = verbose
-		self.toUTF = toUTF
-
 	def request_auth(self,call_name,params={}):
 		r = httpBot(self.APIAUTH + call_name + '.php', self.verbose)
 		params.update(self.API_KEY)
@@ -48,16 +46,6 @@ class intersango:
 			return self.convert(json.loads(r.go()))
 		else:
 			return json.loads(r.go())
-	
-	def convert(self, input):
-		if isinstance(input, dict):
-			return dict((self.convert(key), self.convert(value)) for key, value in input.iteritems())
-		elif isinstance(input, list):
-			return [self.convert(element) for element in input]
-		elif isinstance(input, unicode):
-			return input.encode('utf-8')
-		else:
-			return input
 
 	# get recommended price (non-API)
 	def getRec(self, currency):
