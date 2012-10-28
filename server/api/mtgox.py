@@ -20,9 +20,9 @@ class mtgox:
 	API		= HOME + 'api/'
 	APIAUTH	= API + VERSION + '/'
 	
-	def __init__(self, verbose = False):
+	def __init__(self, verbose = False, toUTF = True):
 		self.verbose = verbose
-	
+		self.toUTF = toUTF
 	
 	
 	# Data
@@ -53,7 +53,20 @@ class mtgox:
 		r.get = get
 		if raw:
 			r.get.update({'raw': 1})
-		return json.loads(r.go())
+		if self.toUTF:
+			return self.convert(json.loads(r.go()))
+		else
+			return json.loads(r.go())
+	
+	def convert(self, input):
+		if isinstance(input, dict):
+			return {convert(key): convert(value) for key, value in input.iteritems()}
+		elif isinstance(input, list):
+			return [convert(element) for element in input]
+		elif isinstance(input, unicode):
+			return input.encode('utf-8')
+		else:
+			return input
 	
 	def currency(self, currency, call_name, since=0):
 		return self.request('BTC' + self.SYMBOLS[currency] + '/' + call_name, get={'since':str(since)})

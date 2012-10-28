@@ -27,20 +27,37 @@ class intersango:
 	fill_or_kill = 'fok'
 	immediate_or_cancel = 'ioc'
 
-	def __init__(self, verbose = False):
+	def __init__(self, verbose = False, toUTF = True):
 		self.verbose = verbose
+		self.toUTF = toUTF
 
 	def request_auth(self,call_name,params={}):
 		r = httpBot(self.APIAUTH + call_name + '.php', self.verbose)
 		params.update(self.API_KEY)
 		r.post = params
-		return json.loads(r.go())
+		if self.toUTF:
+			return self.convert(json.loads(r.go()))
+		else
+			return json.loads(r.go())
 	
 	# trades, depth, ticker
 	def request_data(self, call_name, params={}):
 		r = httpBot(self.API + call_name+'.php', self.verbose)
 		r.get = params
-		return json.loads(r.go())
+		if self.toUTF:
+			return self.convert(json.loads(r.go()))
+		else
+			return json.loads(r.go())
+	
+	def convert(self, input):
+		if isinstance(input, dict):
+			return {convert(key): convert(value) for key, value in input.iteritems()}
+		elif isinstance(input, list):
+			return [convert(element) for element in input]
+		elif isinstance(input, unicode):
+			return input.encode('utf-8')
+		else:
+			return input
 
 	# get recommended price (non-API)
 	def getRec(self, currency):

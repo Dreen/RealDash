@@ -1,0 +1,7 @@
+server_old/
+
+# generated files
+client/address
+server_pid
+server/logs/archive/*
+*.log
