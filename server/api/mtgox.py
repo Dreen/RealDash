@@ -9,10 +9,10 @@ from urllib import urlencode
 
 class mtgox:
 	# Settings
-	API_KEY	= '360e28ab-b5a8-40fa-e11c-25d271947c51'
-	SECRET	= b64decode('JNUmav6DNbBLgPJLfVCRmNhDGbpzIKbhIe2ZgxAt0RsJNy45wNLModKURZ3j5O9C7XlxjLbk8XkFbPrydeQnJQ==')
-	LOGIN	= 'Dreen'
-	PASS	= 'a&_K4+j%O-}<4BQ'
+	API_KEY	= ''
+	SECRET	= b64decode('')
+	LOGIN	= ''
+	PASS	= ''
 	VERSION	= '1'
 	
 	# Locations

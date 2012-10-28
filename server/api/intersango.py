@@ -5,9 +5,9 @@ import re
 
 class intersango:
 	# Settings
-	API_KEY	= {'api_key':'8a8aec137cb271d8f767dd7aca6e79b3'}
-	LOGIN	= 'greg.balaga@gmail.com'
-	PASS	= '82[fD650lh/2y57'
+	API_KEY	= {'api_key':''}
+	LOGIN	= ''
+	PASS	= ''
 	VERSION	= '0.1'
 	
 	# Locations
