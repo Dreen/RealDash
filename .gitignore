@@ -7,7 +7,6 @@ server_old/
 client/address
 server_pid
 server/logs/archive/*
-server/samples/
 *.log
 
 #################

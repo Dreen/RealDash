@@ -5,9 +5,9 @@ import re
 
 class intersango:
 	# Settings
-	API_KEY	= {'api_key':''}
-	LOGIN	= ''
-	PASS	= ''
+	API_KEY	= {'api_key':''} #### API KEY
+	LOGIN	= '' #### LOGIN
+	PASS	= '' #### PASS
 	VERSION	= '0.1'
 	
 	# Locations
@@ -37,7 +37,7 @@ class intersango:
 		r.post = params
 		if self.toUTF:
 			return self.convert(json.loads(r.go()))
-		else:
+		else
 			return json.loads(r.go())
 	
 	# trades, depth, ticker
@@ -46,14 +46,14 @@ class intersango:
 		r.get = params
 		if self.toUTF:
 			return self.convert(json.loads(r.go()))
-		else:
+		else
 			return json.loads(r.go())
 	
 	def convert(self, input):
 		if isinstance(input, dict):
-			return dict((self.convert(key), self.convert(value)) for key, value in input.iteritems())
+			return {convert(key): convert(value) for key, value in input.iteritems()}
 		elif isinstance(input, list):
-			return [self.convert(element) for element in input]
+			return [convert(element) for element in input]
 		elif isinstance(input, unicode):
 			return input.encode('utf-8')
 		else:
