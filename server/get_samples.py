@@ -9,7 +9,6 @@ def save(result, file):
     f.write(pformat(result))
     f.close()
 
-save(m.currency(7,'ticker'),			'samples/mtgoxGBPticker')
 save(m.currency(7,'ticker'),			'samples/mtgoxGBPticker.json')
 save(m.currency(7,'depth'),				'samples/mtgoxGBPdepth.json')
 save(m.currency(7,'fulldepth'), 		'samples/mtgoxGBPfulldepth.json')

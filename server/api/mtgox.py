@@ -9,10 +9,10 @@ from urllib import urlencode
 
 class mtgox:
 	# Settings
-	API_KEY	= '' #### API KEY
-	SECRET	= b64decode('') #### ENCODED SECRET
-	LOGIN	= '' #### LOGIN
-	PASS	= '' #### PASS
+	API_KEY	= ''
+	SECRET	= b64decode('')
+	LOGIN	= ''
+	PASS	= ''
 	VERSION	= '1'
 	
 	# Locations
@@ -55,14 +55,14 @@ class mtgox:
 			r.get.update({'raw': 1})
 		if self.toUTF:
 			return self.convert(json.loads(r.go()))
-		else
+		else:
 			return json.loads(r.go())
 	
 	def convert(self, input):
 		if isinstance(input, dict):
-			return {convert(key): convert(value) for key, value in input.iteritems()}
+			return dict((self.convert(key), self.convert(value)) for key, value in input.iteritems())
 		elif isinstance(input, list):
-			return [convert(element) for element in input]
+			return [self.convert(element) for element in input]
 		elif isinstance(input, unicode):
 			return input.encode('utf-8')
 		else:
