@@ -10,6 +10,9 @@ server/logs/archive/*
 server/samples/*.json
 *.log
 
+# sensitive information
+server/api/cred/*.cred
+
 #################
 ## Eclipse
 #################
