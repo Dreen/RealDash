@@ -1,7 +1,6 @@
 from httpBot import httpBot
 from api import api
 
-import json
 from time import time
 from hashlib import sha512
 from hmac import HMAC
@@ -9,23 +8,11 @@ from base64 import b64encode, b64decode
 from urllib import urlencode
 
 class mtgox(api):
-	# Settings
-	API_KEY	= '360e28ab-b5a8-40fa-e11c-25d271947c51'
-	SECRET	= b64decode('JNUmav6DNbBLgPJLfVCRmNhDGbpzIKbhIe2ZgxAt0RsJNy45wNLModKURZ3j5O9C7XlxjLbk8XkFbPrydeQnJQ==')
-	LOGIN	= 'Dreen'
-	PASS	= 'a&_K4+j%O-}<4BQ'
 	VERSION	= '1'
-	
-	# Locations
 	HOME	= 'https://mtgox.com/'
 	API		= HOME + 'api/'
 	APIAUTH	= API + VERSION + '/'
 	
-	
-	
-	
-	
-	# Data
 	SYMBOLS = [
 	'USD',
 	'AUD',
@@ -47,16 +34,13 @@ class mtgox(api):
 	def request(self, call_name, raw = True, get={}, post={}):
 		r = httpBot(self.APIAUTH + call_name, self.verbose)
 		post.update({'nonce': int(time()*100000)})
-		r.uHead.update({'Rest-Key': self.API_KEY,
-		'Rest-Sign': b64encode(str(HMAC(self.SECRET, urlencode(post), sha512).digest()))})
+		r.uHead.update({'Rest-Key': self.cred['API_KEY'],
+		'Rest-Sign': b64encode(str(HMAC(b64decode(self.cred['SECRET']), urlencode(post), sha512).digest()))})
 		r.post = post
 		r.get = get
 		if raw:
 			r.get.update({'raw': 1})
-		if self.toUTF:
-			return self.convert(json.loads(r.go()))
-		else:
-			return json.loads(r.go())
+		return self.getJSON(r.go())
 	
 	def currency(self, currency, call_name, since=0):
 		return self.request('BTC' + self.SYMBOLS[currency] + '/' + call_name, get={'since':str(since)})

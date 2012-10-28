@@ -1,16 +1,11 @@
 from httpBot import httpBot
 from api import api
 
-import json
 import decimal
 import re
 
 class intersango(api):
-	# Settings
-	API_KEY	= {'api_key':'8a8aec137cb271d8f767dd7aca6e79b3'}
-	LOGIN	= 'greg.balaga@gmail.com'
-	PASS	= '82[fD650lh/2y57'
-	VERSION	= '0.1'
+	VERSION = "0.1"
 	
 	# Locations
 	HOME	= 'https://intersango.com/'
@@ -31,21 +26,15 @@ class intersango(api):
 
 	def request_auth(self,call_name,params={}):
 		r = httpBot(self.APIAUTH + call_name + '.php', self.verbose)
-		params.update(self.API_KEY)
+		params.update(self.cred['API_KEY'])
 		r.post = params
-		if self.toUTF:
-			return self.convert(json.loads(r.go()))
-		else:
-			return json.loads(r.go())
+		return self.getJSON(r.go())
 	
 	# trades, depth, ticker
 	def request_data(self, call_name, params={}):
 		r = httpBot(self.API + call_name+'.php', self.verbose)
 		r.get = params
-		if self.toUTF:
-			return self.convert(json.loads(r.go()))
-		else:
-			return json.loads(r.go())
+		return self.getJSON(r.go())
 
 	# get recommended price (non-API)
 	def getRec(self, currency):
@@ -56,7 +45,7 @@ class intersango(api):
 		
 		# login
 		r.setURL(self.LOGINP)
-		r.post = [('login[email]',self.LOGIN),('login[password]',self.PASS),('csrf_token',self.csrf_token)]
+		r.post = [('login[email]',self.cred['LOGIN']),('login[password]',self.cred['PASS']),('csrf_token',self.csrf_token)]
 		r.go()
 		
 		# get recommended price
