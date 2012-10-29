@@ -12,6 +12,7 @@ server/samples/*.json
 
 # sensitive information
 server/api/cred/*.cred
+!api.cred
 
 #################
 ## Eclipse
