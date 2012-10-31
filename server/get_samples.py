@@ -6,7 +6,7 @@ i = intersango.intersango()
 
 def save(result, file):
     f = open(file, 'w')
-    f.write(pformat(result))
+    f.write(pformat(result).replace("'",'"'))
     f.close()
 
 save(m.currency(7,'ticker'),			'samples/mtgoxGBPticker.json')
