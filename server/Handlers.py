@@ -1,15 +1,17 @@
 def MsgHandler(self, msgObj):
 	# authentication
 	if msgObj.cmd == 'Auth':
-		cursor = self.db.clients.find({'uid':msgObj.cid})
-		if cursor.count() != 1 or cursor[0]['lastip'] != self.environ['REMOTE_ADDR']:
-			checks = ' checks: ' + str(cursor.count() != 1) +' or '+ str(cursor[0]['lastip'] != self.environ['REMOTE_ADDR'])
-			self.log('Authentication error' +checks)
-			self.outbox('onError', 'Authentication error' +checks)
-		else:
-			# set ID
-			self.id = msgObj.cid
+		self.id = msgObj.cid
+		try:
+			data = self.readDB()
+		except IDCollisionWarning:
+			self.id = None
 			
+		if self.id is None or data['lastip'] != self.environ['REMOTE_ADDR']:
+			self.id = None
+			self.log('Authentication error')
+			self.outbox('onError', 'Authentication error')
+		else:
 			# move the log into the file
 			self.out.realize('logs/' + self.id + '.log')
 			self.log('Authenticated with ID: ' + self.id)
@@ -18,7 +20,7 @@ def MsgHandler(self, msgObj):
 			self.outbox('ServerModel', self.serverModel.keys())
 			
 			# restore the saved client model to memory
-			self.model = cursor[0]['savedModel']
+			self.model = data['savedModel']
 	
 	# do not allow other commands for un-authenticated clients
 	elif self.id is None:
@@ -45,13 +47,13 @@ def MsgHandler(self, msgObj):
 	# saving a client model for the client
 	elif msgObj.cmd == 'SaveCM':
 		self.model = msgObj.data
-		self.db.clients.update({'uid':self.id},{'$set':{'savedModel':self.model}})
+		self.updateDB({'savedModel':self.model})
 		self.log('Client Model saved on the server.')
 	
 	# erasing the saved client model
 	elif msgObj.cmd == 'DeleteCM':
 		self.model = []
-		self.db.clients.update({'uid':self.id},{'$set':{'savedModel':self.model}})
+		self.updateDB({'savedModel':self.model})
 		self.log('Client Model erased.')
 	
 	else:

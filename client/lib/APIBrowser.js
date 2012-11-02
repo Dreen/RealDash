@@ -284,6 +284,56 @@ APIBrowser = WSClient.child();
 	
 	/************** MISC **************/
 	
+	// print a message in console with a time sig
+	APIBrowser.prototype.log = function(msg)
+	{
+		var t = new Date();
+		console.log('['+t.getHours()+':'+t.getMinutes()+':'+t.getSeconds()+':'+t.getMilliseconds()+'] '+msg);
+	};
+	
+	
+	/*** BELOW METHODS CALLED AUTOMATICALLY WITH REGISTERED CALLBACKS ***/
+	
+	
+	// receive list of available items in the server model
+	APIBrowser.prototype.ServerModel = function(servermodel)
+	{
+		if (!$.isArray(servermodel))
+		{
+			this.serverModel = [servermodel];
+		}
+		else
+		{
+			this.serverModel = servermodel;
+		}
+		
+		var $tblModel = $('#tblModel');
+		var tmp = Array();
+		for (var i=0; i<servermodel.length; i++)
+		{
+			tmp.push('<tr><td><label class="checkbox"><input type="checkbox" id="chkbx-serverModel-'+i+'">');
+			tmp.push(servermodel[i]);
+			tmp.push('</label></td></tr>');
+		}
+		$tblModel.html(tmp.join(''));
+		$('#container-tblModel').slideToggle('slow');
+		this.toggleWorking(); //off
+	};
+	
+	// receive client model data that was saved on the server
+	APIBrowser.prototype.SavedCM = function(clientmodel)
+	{
+		if (!$.isArray(clientmodel))
+		{
+			this.savedCM['serverdata'] = [clientmodel];
+		}
+		else
+		{
+			this.savedCM['serverdata'] = clientmodel;
+		}
+		this.savedCMtoString('serverdata');
+	};
+	
 	// connection has been established to the server
 	APIBrowser.prototype.onOpen = function()
 	{
@@ -319,40 +369,4 @@ APIBrowser = WSClient.child();
 	APIBrowser.prototype.onError = function(msg)
 	{
 		this.alert(msg, 'error');
-	};
-	
-	// print a message in console with a time sig
-	APIBrowser.prototype.log = function(msg)
-	{
-		var t = new Date();
-		console.log('['+t.getHours()+':'+t.getMinutes()+':'+t.getSeconds()+':'+t.getMilliseconds()+'] '+msg);
-	};
-	
-	
-	/*** BELOW METHODS CALLED AUTOMATICALLY WITH REGISTERED CALLBACKS ***/
-	
-	
-	// receive list of available items in the server model
-	APIBrowser.prototype.ServerModel = function(servermodel)
-	{
-		this.serverModel = servermodel;
-		
-		var $tblModel = $('#tblModel');
-		var tmp = Array();
-		for (var i=0; i<servermodel.length; i++)
-		{
-			tmp.push('<tr><td><label class="checkbox"><input type="checkbox" id="chkbx-serverModel-'+i+'">');
-			tmp.push(servermodel[i]);
-			tmp.push('</label></td></tr>');
-		}
-		$tblModel.html(tmp.join(''));
-		$('#container-tblModel').slideToggle('slow');
-		this.toggleWorking(); //off
-	};
-	
-	// receive client model data that was saved on the server
-	APIBrowser.prototype.SavedCM = function(clientmodel)
-	{
-		this.savedCM['serverdata'] = clientmodel;
-		this.savedCMtoString('serverdata');
 	};

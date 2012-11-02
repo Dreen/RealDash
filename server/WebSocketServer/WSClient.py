@@ -1,7 +1,7 @@
 from time import time
 
 from WebSocketServer.WSMsg import Msg
-from WebSocketServer.Misc import Logger
+from WebSocketServer.Misc import Logger, IDCollisionWarning
 
 
 # This class aggregates all clients currently connected to the server
@@ -34,7 +34,6 @@ class Client:
 	def __init__(self, environ={}, serverModel={}, cPool=ClientPool(), db=None, msgHandler=None):
 		# properties
 		self.environ = environ
-		self.joined = int(time())
 		self.id = None
 		self.broadcastPaused = True # TODO unique
 		
@@ -54,6 +53,20 @@ class Client:
 		# for i in range(len):
 			# rzygi += str(hex(int(random() * 0x10000)))[2:]
 		# return rzygi
+	
+	# update some client data in the db
+	def updateDB(self, data={}):
+		data['lastSeen'] = int(time())
+		self.db.clients.update({'uid':self.id},{'$set':data})
+		
+	# read all client data from the db
+	def readDB(self):
+		self.updateDB()
+		data = self.db.clients.find({'uid': self.id})
+		if data.count() != 1:
+			self.log('Possible ID collision')
+			raise IDCollisionWarning(self.id)
+		return data[0]
 	
 	def log(self, msg):
 		if not self.out.closed:

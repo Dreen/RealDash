@@ -7,5 +7,7 @@
 ./server/api/httpBot.py:  55:		if h[0] == 'Set-Cookie': # TODO there seems to still be some issues with parsing cookies, ex google.com
 ./server/api/mtgox.py:  64	:# TODO implement rest https://en.bitcoin.it/wiki/MtGox/API/HTTP/v1:
 ./server/WebSocketServer/WSServer.py:  14:# TODO wsgi multithreaded?
-./server/WebSocketServer/WSClient.py:  12:		### TODO MONGO
 ./server/WebSocketServer/WSClient.py:  44:		self.broadcastPaused = True # TODO unique
+
+
+make a clientdb class

@@ -147,6 +147,18 @@ WSConnection = Object.child();
     };
 	
 	// register a callback under global trigger name
+	/****
+	IMPORTANT when registering, since methods can both expect a single string argument OR a single array which may happen to have a single element,
+	in the latter instance you should check if your argument is an array and if not, re-make it into an array:
+		function doit(arrayArgument)
+		{
+			if (!$.isArray(arrayArgument))
+			{
+				arrayArgument = [arrayArgument];
+			}
+			...
+	This is due to the way the Function.prototype.apply() works.
+	****/
     WSConnection.prototype.register = function(context, name)
     {
     	if (name in context)
