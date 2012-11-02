@@ -40,7 +40,13 @@ else
 			break;
 		}
 	}
-	$clients->insert(array('uid' => $clientID, 'lastip' => $_SERVER['REMOTE_ADDR'], "savedModel" => array()));
+	$t = time();
+	$clients->insert(array(
+		'uid' => $clientID,
+		'lastip' => $_SERVER['REMOTE_ADDR'],
+		"savedModel" => array(),
+		"lastLogin" => $t)			// TODO: change to lastSeen updated at each action
+	);
 }
 
 if (file_exists('../address'))

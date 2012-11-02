@@ -7,11 +7,18 @@ def MsgHandler(self, msgObj):
 			self.log('Authentication error' +checks)
 			self.outbox('onError', 'Authentication error' +checks)
 		else:
+			# set ID
 			self.id = msgObj.cid
+			
+			# move the log into the file
 			self.out.realize('logs/' + self.id + '.log')
 			self.log('Authenticated with ID: ' + self.id)
+			
 			# as a greeting send the server model
 			self.outbox('ServerModel', self.serverModel.keys())
+			
+			# restore the saved client model to memory
+			self.model = cursor[0]['savedModel']
 	
 	# do not allow other commands for un-authenticated clients
 	elif self.id is None:
@@ -29,18 +36,22 @@ def MsgHandler(self, msgObj):
 	# client requesting a saved client model (if any)
 	elif msgObj.cmd == 'GetSavedCM':
 		if len(self.model) > 0:
-			self.outbox('SavedCM', self.model) # TODO MONGO
+			# this is not read from db because it should be current, update like this if necessary:
+			# self.model = self.db.clients.find({'uid':self.id})[0]['savedModel']
+			self.outbox('SavedCM', self.model) 
 		else:
 			self.outbox('SavedCM', '')
 	
 	# saving a client model for the client
 	elif msgObj.cmd == 'SaveCM':
-		self.model = msgObj.data # TODO MONGO
+		self.model = msgObj.data
+		self.db.clients.update({'uid':self.id},{'$set':{'savedModel':self.model}})
 		self.log('Client Model saved on the server.')
 	
 	# erasing the saved client model
 	elif msgObj.cmd == 'DeleteCM':
 		self.model = []
+		self.db.clients.update({'uid':self.id},{'$set':{'savedModel':self.model}})
 		self.log('Client Model erased.')
 	
 	else:

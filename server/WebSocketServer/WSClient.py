@@ -9,14 +9,9 @@ class ClientPool:
 	def __init__(self, db=None):
 		self.clients = []
 		self.db = db
-		### TODO MONGO
-		#self.idFileList = []
-		#for idFile in listdir('logs'):
-		#	self.idFileList.append(idFile.replace('.log',''))
 	
 	def add(self, client):
 		self.clients.append(client)
-		#self.idFileList.append(client.id)
 	
 	def remove(self, client):
 		client.log("Removing from pool")
