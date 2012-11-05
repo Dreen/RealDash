@@ -1,6 +1,6 @@
-APIBrowser = WSClient.child();
+APIBrowser = WSClient.child({
 	// constructor, set initial values and initiate connection
-	APIBrowser.prototype.__init__ = function()
+	__init__: function()
 	{
 		this.WSmethods = ['ServerModel', 'SavedCM'];
 		this.serverModel = [];
@@ -14,10 +14,10 @@ APIBrowser = WSClient.child();
 		this.setUpInterface();
 		
 		this.toggleWorking();//off
-	};
+	},
 	
 	// set up the GUI interface controls
-	APIBrowser.prototype.setUpInterface = function()
+	setUpInterface: function()
 	{
 		var mirror = this;
 		$('#container-tblModel').toggle();
@@ -91,6 +91,9 @@ APIBrowser = WSClient.child();
 			mirror.hideAllMain();
 			mirror.toggleWorking(); //off
 		});
+		
+		// close the select model menu
+		$('#btn-selectModel-close').click(this.hideAllMain);
 		
 		
 		/********** SAVED DATA WINDOW ***********/
@@ -190,13 +193,13 @@ APIBrowser = WSClient.child();
 		// set timers to refresh saved data automatically
 		this.timer_cookiedata = setInterval(cookieDataRefresh, INTERVAL_COOKIEDATA * 1000);
 		this.timer_serverdata = setInterval(serverDataRefresh, INTERVAL_SERVERDATA * 1000);
-	};
+	},
 	
 	/*********** MISC INTERFACE METHODS ***********/
 	
 	
 	// show an alert message
-	APIBrowser.prototype.alert = function(msg, type)
+	alert: function(msg, type)
 	{
 		$alerts = $('#alerts');
 		var $newDiv = $('<div class="alert"><span class="badge">&times;</span><button type="button" class="close" data-dismiss="alert">&times;</button><b></b></div>');
@@ -210,10 +213,10 @@ APIBrowser = WSClient.child();
 		$alerts.prepend($newDiv);
 		$newDiv.slideToggle('fast');
 		this.alertCountdown($newDiv, INTERVAL_HIDEALERTS + 1);
-	};
+	},
 	
 	// display a counter next to the alert and fade it when the counter stops
-	APIBrowser.prototype.alertCountdown = function($alert, timer)
+	alertCountdown: function($alert, timer)
 	{
 		var mirror = this;
 		if (timer == 0)
@@ -228,10 +231,10 @@ APIBrowser = WSClient.child();
 				mirror.alertCountdown($alert, timer);
 			}, 1000);
 		}
-	};
+	},
 	
 	// return the function for refreshing data stored in a cookie
-	APIBrowser.prototype.getCookieDataRefresh = function()
+	getCookieDataRefresh: function()
 	{
 		var mirror = this;
 		var $savedData = $('#savedData');
@@ -243,12 +246,13 @@ APIBrowser = WSClient.child();
 			}
 			var cookievalue = readCookie('APIBrowser_ClientModel_'+mirror.cid);
 			mirror.savedCM['cookiedata'] = (cookievalue) ? jQuery.parseJSON(cookievalue) : [];
+			//mirror.savedCMtoObj('cookiedata');
 			mirror.savedCMtoString('cookiedata');
 		};
-	};
+	},
 	
-	// return the function for refreshing data stored in a cookie
-	APIBrowser.prototype.getServerDataRefresh = function()
+	// return the function for refreshing data stored on the server
+	getServerDataRefresh: function()
 	{
 		var mirror = this;
 		var $savedData = $('#savedData');
@@ -260,43 +264,59 @@ APIBrowser = WSClient.child();
 				$('#serverdata').html('Requested...');
 			}
 		};
-	};
+	},
+	
+	// convert saved client model data to an object for easier parsing
+	savedCMtoObj: function(dataType)
+	{
+		var api = {};
+		for (var i = 0; i < this.savedCM[dataType].length; i++)
+		{
+			var m = this.savedCM[dataType][i].split('/');
+			if (!$.isArray(api[m[0]]))
+			{
+				api[m[0]] = [];
+			}
+			api[m.shift()].push({'call':m.shift(),'args':m});
+		}
+		this.savedCM[dataType] = api;
+	},
 	
 	// write the representation of saved client model data // TODO more fancy
-	APIBrowser.prototype.savedCMtoString = function(dataType)
+	savedCMtoString: function(dataType)
 	{
 		var repr = (this.savedCM[dataType].length > 0) ? this.savedCM[dataType].join(', ') : '';
 		$('#'+dataType).html(repr);
-	};
+	},
 	
 	// toggle the "working" label
-	APIBrowser.prototype.toggleWorking = function()
+	toggleWorking: function()
 	{
 		$('#label-working').css('left', Math.round($(document).width()/2) - Math.round($('#label-working').width()/2)); // reposition
 		$('#label-working').slideToggle('fast');
-	};
+	},
 	
 	// hide all main area containers
-	APIBrowser.prototype.hideAllMain = function()
+	hideAllMain: function()
 	{
 		$('.m-a-c').slideUp('slow');
-	};
+	},
 	
 	/************** MISC **************/
 	
 	// print a message in console with a time sig
-	APIBrowser.prototype.log = function(msg)
+	log: function(msg)
 	{
 		var t = new Date();
 		console.log('['+t.getHours()+':'+t.getMinutes()+':'+t.getSeconds()+':'+t.getMilliseconds()+'] '+msg);
-	};
+	},
 	
 	
 	/*** BELOW METHODS CALLED AUTOMATICALLY WITH REGISTERED CALLBACKS ***/
 	
 	
 	// receive list of available items in the server model
-	APIBrowser.prototype.ServerModel = function(servermodel)
+	ServerModel: function(servermodel)
 	{
 		if (!$.isArray(servermodel))
 		{
@@ -318,10 +338,10 @@ APIBrowser = WSClient.child();
 		$tblModel.html(tmp.join(''));
 		$('#container-tblModel').slideToggle('slow');
 		this.toggleWorking(); //off
-	};
+	},
 	
 	// receive client model data that was saved on the server
-	APIBrowser.prototype.SavedCM = function(clientmodel)
+	SavedCM: function(clientmodel)
 	{
 		if (!$.isArray(clientmodel))
 		{
@@ -332,10 +352,10 @@ APIBrowser = WSClient.child();
 			this.savedCM['serverdata'] = clientmodel;
 		}
 		this.savedCMtoString('serverdata');
-	};
+	},
 	
 	// connection has been established to the server
-	APIBrowser.prototype.onOpen = function()
+	onOpen: function()
 	{
 		var mirror = this;
 		
@@ -350,10 +370,10 @@ APIBrowser = WSClient.child();
 		
 		// send authentication request to the server
 		this.send('Auth');
-	};
+	},
 	
 	// connection has been lost
-	APIBrowser.prototype.onClose = function()
+	onClose: function()
 	{
 		var mirror = this;
 		var $btnConnect = $('#btn-connect');
@@ -363,10 +383,11 @@ APIBrowser = WSClient.child();
 			$btnConnect.unbind('click').addClass('disabled').html('Connecting...');
 			WSClient.prototype.__init__.call(mirror, mirror.WSmethods);
 		});
-	};
+	},
 	
 	// an error has occured
-	APIBrowser.prototype.onError = function(msg)
+	onError: function(msg)
 	{
 		this.alert(msg, 'error');
-	};
+	}
+});
