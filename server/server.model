@@ -1,6 +1,8 @@
-{"intersango/request_data/depth":	{"api": "intersango",	"method": "request_data",	"args": ["depth"]},
- "mtgox/currency/11/ticker":		{"api": "mtgox",		"method": "currency",		"args": [11, "ticker"]},
- "mtgox/currency/7/depth":			{"api": "mtgox",		"method": "currency",		"args": [7, "depth"]},
- "mtgox/currency/11/depth":			{"api": "mtgox",		"method": "currency",		"args": [11, "depth"]},
- "mtgox/currency/7/ticker":			{"api": "mtgox",		"method": "currency",		"args": [11, "ticker"]},
- "intersango/request_data/ticker":	{"api": "intersango",	"method": "request_data",	"args": ["ticker"]}}
+[
+	{"api": "mtgox",		"method": "currency",		"args": [11, "ticker"]},
+	{"api": "mtgox",		"method": "currency",		"args": [7, "depth"]},
+	{"api": "mtgox",		"method": "currency",		"args": [11, "depth"]},
+	{"api": "mtgox",		"method": "currency",		"args": [11, "ticker"]},
+	{"api": "intersango",	"method": "request_data",	"args": ["depth"]},
+	{"api": "intersango",	"method": "request_data",	"args": ["ticker"]}
+]

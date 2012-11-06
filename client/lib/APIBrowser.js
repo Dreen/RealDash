@@ -246,7 +246,6 @@ APIBrowser = WSClient.child({
 			}
 			var cookievalue = readCookie('APIBrowser_ClientModel_'+mirror.cid);
 			mirror.savedCM['cookiedata'] = (cookievalue) ? jQuery.parseJSON(cookievalue) : [];
-			//mirror.savedCMtoObj('cookiedata');
 			mirror.savedCMtoString('cookiedata');
 		};
 	},
@@ -266,27 +265,63 @@ APIBrowser = WSClient.child({
 		};
 	},
 	
-	// convert saved client model data to an object for easier parsing
-	savedCMtoObj: function(dataType)
+	// write the representation of saved client model data
+	savedCMtoString: function(dataType)
 	{
+		// dont do anything if there is no data to process...
+		if(this.savedCM[dataType].length == 0)
+		{
+			$('#'+dataType).html('');
+			return;
+		}
+
+		// clear out previous representation
+        $('div.tooltip').remove();
+        $('#'+dataType).empty();
+		
+		// gather together calls from the same apis
 		var api = {};
 		for (var i = 0; i < this.savedCM[dataType].length; i++)
 		{
-			var m = this.savedCM[dataType][i].split('/');
-			if (!$.isArray(api[m[0]]))
+			var call = this.savedCM[dataType][i];
+			if (!$.isArray(api[call['api']]))
 			{
-				api[m[0]] = [];
+				api[call['api']] = [];
 			}
-			api[m.shift()].push({'call':m.shift(),'args':m});
+			api[call['api']].push(call);
 		}
-		this.savedCM[dataType] = api;
+		
+		// create visual representation
+		for (var apiName in api)
+		{
+			var menu = '';
+            for (var i = 0; i < api[apiName].length; i++)
+			{
+                menu += this.callToString(api[apiName][i]) + '<br />';
+            }
+			$('<a></a>')
+                .attr({
+                    href: '#',
+                    rel: 'tooltip',
+                    title: menu
+                })
+                .html(apiName)
+				.click(function(){
+					$('#chkbx-'+dataType).attr('checked','checked');
+				})
+                .tooltip({"placement" : "bottom",
+                          "html": true
+                        })
+				.appendTo('#'+dataType);
+		}
 	},
 	
-	// write the representation of saved client model data // TODO more fancy
-	savedCMtoString: function(dataType)
+	// create string representation of a single API call
+	callToString: function(call)
 	{
-		var repr = (this.savedCM[dataType].length > 0) ? this.savedCM[dataType].join(', ') : '';
-		$('#'+dataType).html(repr);
+		return call['api'] + ' <i class="icon-arrow-right"></i> ' + 
+			call['method'] + ' <i class="icon-chevron-left"></i> ' + 
+			call['args'].join(', ') + ' <i class="icon-chevron-right"></i> ';
 	},
 	
 	// toggle the "working" label
@@ -332,7 +367,7 @@ APIBrowser = WSClient.child({
 		for (var i=0; i<servermodel.length; i++)
 		{
 			tmp.push('<tr><td><label class="checkbox"><input type="checkbox" id="chkbx-serverModel-'+i+'">');
-			tmp.push(servermodel[i]);
+			tmp.push(this.callToString(servermodel[i]));
 			tmp.push('</label></td></tr>');
 		}
 		$tblModel.html(tmp.join(''));
@@ -343,7 +378,11 @@ APIBrowser = WSClient.child({
 	// receive client model data that was saved on the server
 	SavedCM: function(clientmodel)
 	{
-		if (!$.isArray(clientmodel))
+		if (clientmodel == undefined)
+		{
+			this.savedCM['serverdata'] = [];
+		}
+		else if (!$.isArray(clientmodel))
 		{
 			this.savedCM['serverdata'] = [clientmodel];
 		}

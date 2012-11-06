@@ -108,7 +108,7 @@ WSConnection = Object.child({
 			else
 				mirror.fire(mirror.cid, 'onError', 'Invalid server command: ' + msg.data);
 			
-			// TODO think about what to do with the message post-process. statistics?
+			// TODO aggregate messages in local storage (APIBrowser feature when messages from bot are implemented)
 		};
 	},
 	
@@ -142,6 +142,7 @@ WSConnection = Object.child({
 			}
 			...
 	This is due to the way the Function.prototype.apply() works.
+	Yet, still, if the server sends eg. an empty array [] the arg is undefined ... // TODO
 	****/
     register: function(context, name)
     {

@@ -17,7 +17,7 @@ def MsgHandler(self, msgObj):
 			self.log('Authenticated with ID: ' + self.id)
 			
 			# as a greeting send the server model
-			self.outbox('ServerModel', self.serverModel.keys())
+			self.outbox('ServerModel', self.serverModel)
 			
 			# restore the saved client model to memory
 			self.model = data['savedModel']
@@ -37,12 +37,9 @@ def MsgHandler(self, msgObj):
 	
 	# client requesting a saved client model (if any)
 	elif msgObj.cmd == 'GetSavedCM':
-		if len(self.model) > 0:
-			# this is not read from db because it should be current, update like this if necessary:
-			# self.model = self.db.clients.find({'uid':self.id})[0]['savedModel']
-			self.outbox('SavedCM', self.model) 
-		else:
-			self.outbox('SavedCM', '')
+		# this is not read from db because it should be current, update like this if necessary:
+		# self.model = self.db.clients.find({'uid':self.id})[0]['savedModel']
+		self.outbox('SavedCM', self.model)
 	
 	# saving a client model for the client
 	elif msgObj.cmd == 'SaveCM':

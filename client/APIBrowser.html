@@ -48,6 +48,9 @@ body, html {
 .alert .badge {
     margin-right: 10px;
 }
+#serverdata a, #cookiedata a {
+    margin: 0px 0.2em;
+}
 </style>
 <script type="text/javascript">
 /********************************************\
@@ -177,8 +180,12 @@ $(function(){
 					</div>
 				</li>
 			</ul>
-			<label class="checkbox"><input type="checkbox" id="chkbx-cookiedata" />Cookie data: <span id="cookiedata"></span></label>
-			<label class="checkbox"><input type="checkbox" id="chkbx-serverdata" />Server data: <span id="serverdata"></span></label>
+			<label class="checkbox">
+				<input type="checkbox" id="chkbx-cookiedata" />Cookie data: <span id="cookiedata"></span>
+			</label>
+			<label class="checkbox">
+				<input type="checkbox" id="chkbx-serverdata" />Server data: <span id="serverdata"></span>
+			</label>
 		</div>
 	</div>
 </div>

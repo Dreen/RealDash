@@ -14,8 +14,8 @@ class Bot(threading.Thread):
 		# Models
 		self.requestModel = requestModel
 		self.api = {}
-		for m in self.requestModel:
-			api = self.requestModel[m]['api']
+		for i in range(len(self.requestModel)):
+			api = self.requestModel[i]['api']
 			if api not in self.api:
 				self.api[api] = None
 				try:
@@ -67,7 +67,8 @@ class Bot(threading.Thread):
 				# prepare and start requests
 				res = {'request_time':t} #, "int_gbp": [], "int_pln": [], "int_rat": [], "mtg_gbp": [], "mtg_pln": [], "mtg_rat": [], "img": [], "mgi": []}
 				self.requests = {}
-				for r in self.requestModel:
+				modelIter = range(len(self.requestModel))
+				for r in modelIter:
 					self.requests[r] = Request(self.api[self.requestModel[r]['api']],self.requestModel[r]['method'],self.requestModel[r]['args'])
 					self.log('Starting request '+r)
 					self.requests[r].start()
@@ -76,7 +77,7 @@ class Bot(threading.Thread):
 				self.log("Completed %d requests in %d seconds." % (total, int(time())-t))
 				
 				# collect results
-				for r in self.requests:
+				for r in modelIter:
 					res[r] = self.requests[r].result
 				self.res = res
 				self.updates += 1
