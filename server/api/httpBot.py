@@ -1,5 +1,6 @@
 import pycurl
 import StringIO
+import json
 from urllib import urlencode
 from time import strftime, localtime, time
 
@@ -14,10 +15,18 @@ class httpBot:
 		self.url  = ""
 		self.ua   = "Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/10.0"
 		self.code = 0
-		
 		self.verbose = verbose
+		
 		if self.verbose:
-			self.log = Logger('logs/httpBot.log', levels={1:' <- ', 2:' -> '})
+			self.curlmap = {}
+			mapin = open('curlopt_map.json','r')
+			map = json.loads(mapin.read())
+			for e in map:
+				self.curlmap[int(e)] = map[e]
+			mapin.close()
+		
+		if self.verbose:
+			self.log = Logger('logs/httpBot.'+str(time())+'.log', levels={1:' <- ', 2:' -> '})
 			self.option([
 			(pycurl.VERBOSE		, True				), # Debugging requires verbosity
 			(pycurl.DEBUGFUNCTION,self.debug		)])# Pass debugging information
@@ -32,7 +41,7 @@ class httpBot:
 		(pycurl.TIMEOUT       	, 120				), # timeout on response
 		(pycurl.MAXREDIRS     	, 100				)])# allow redirects
 		
-		self.setURL(initUrl)
+		self.setURL(initUrl.encode('ascii'))
 	
 	# free resources
 	def __del__(self):
@@ -61,6 +70,11 @@ class httpBot:
 			for o in name:
 				self.option(o[0], o[1])
 		else:
+			if self.verbose:
+				try:
+					self.debug(2, 'SETOPT ('+self.curlmap[name]+', ('+type(val).__name__+')'+json.dumps(val)+')')
+				except TypeError:
+					self.debug(2, 'SETOPT ('+self.curlmap[name]+', <'+type(val).__name__+'>)')
 			self.curl.setopt(name, val)
 	
 	# set the URL

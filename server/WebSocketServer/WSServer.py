@@ -10,34 +10,22 @@ from WebSocketServer.WSClient import *
 from WebSocketServer.WSMsg import Msg
 from WebSocketServer.WSBroadcast import BroadcastThread
 from WebSocketServer.Misc import Logger
-
-# TODO wsgi multithreaded?
-
-import pdb
+from db import getDB
 
 class Server(object):
 	# start the server
-	def __init__(self, port=8000, bot=None, db=None, msgHandler=None, exitHandler=None):
+	def __init__(self, port=8000, msgHandler=None, exitHandler=None):
 		self.out = Logger('logs/server.log')
 		self.server_port = port
 		self.log('Serving at port ' + str(self.server_port))
-		self.bot = bot
-		self.db = db
+		self.db = getDB()
 		self.msgHandler = msgHandler
 		self.exitHandler = exitHandler
 		
-		try:
-			modelIn = open('server.model','r')
-			self.serverModel = json.loads(modelIn.read())
-			modelIn.close()
-		except IOError:
-			print 'Error: Unable to read the server model'
-			exit()
-		
-		self.cPool = ClientPool(self.db)
-		
-		#self.broadcast = BroadcastThread(self.cPool, self.bot)
-		#self.broadcast.start()
+		self.cPool = ClientPool()
+			
+		self.broadcast = BroadcastThread(self.cPool)
+		self.broadcast.start()
 		
 		self.server = WSGIServer(("", self.server_port), self.serve, handler_class=geventwebsocket.WebSocketHandler, log=self.out)
 		gsignal(signal.SIGTERM, self.shutdown)
@@ -65,7 +53,7 @@ class Server(object):
 			return ["400 Bad Request"]
 		try:
 			# setup connection
-			client = Client(environ=environ, serverModel=self.serverModel, cPool=self.cPool, db=self.db, msgHandler=self.msgHandler)
+			client = Client(environ=environ, cPool=self.cPool, msgHandler=self.msgHandler)
 			self.cPool.add(client)
 			self.log('New connection from IP: %s Origin: %s;' % (environ['REMOTE_ADDR'], environ['HTTP_ORIGIN']))
 			
@@ -82,6 +70,8 @@ class Server(object):
 					client.inbox(msg)
 			
 			# close connection
+			client.readDB()
+			client.db.connection.end_request()
 			client.log('Disconnected')
 			self.cPool.remove(client)
 			websocket.close()

@@ -1,12 +1,12 @@
 from time import strftime, localtime
 from StringIO import StringIO
 
-class IDCollisionWarning(Warning):
-	def __init__(self, id):
-		Warning.__init__(self)
-		serverout = Logger('logs/server.log', append=True)
-		serverout.write('WARNING: Possible ID collision: ' + id)
-		serverout.close()
+# class IDCollisionWarning(Warning):
+	# def __init__(self, id):
+		# Warning.__init__(self)
+		# serverout = Logger('logs/server.log', append=True)
+		# serverout.write('WARNING: Possible ID collision: ' + str(id))
+		# serverout.close()
 
 class Logger(object):
 	def __init__(self, filename=None, levels=None, timestamped=True, append=False):

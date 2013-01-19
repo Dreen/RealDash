@@ -2,9 +2,11 @@ APIBrowser = WSClient.child({
 	// constructor, set initial values and initiate connection
 	__init__: function()
 	{
-		this.WSmethods = ['ServerModel', 'SavedCM'];
+		this.WSmethods = ['ServerModel', 'SavedCM', 'JobInfo'];
 		this.serverModel = [];
-		this.clientModel = [];
+		this.clientModel = []; // TODO this has to change its name everywhere to "client request model"
+		this.clientDataModel = [];
+		this.broadcastPaused = true;
 		this.savedCM = {
 			'cookiedata' : [],
 			'serverdata' : []
@@ -12,15 +14,13 @@ APIBrowser = WSClient.child({
 		
 		createCookie('APIBrowser_ClientID', this.cid);
 		this.setUpInterface();
-		
-		this.toggleWorking();//off
 	},
 	
 	// set up the GUI interface controls
 	setUpInterface: function()
 	{
 		var mirror = this;
-		$('#container-tblModel').toggle();
+		$('.m-a-c').toggle();
 		
 		/********** NAVBAR TOP *************/
 		
@@ -28,7 +28,6 @@ APIBrowser = WSClient.child({
 		var $btnConnect = $('#btn-connect');
 		$btnConnect.click(function(){
 			// connect to the websocket server
-			mirror.toggleWorking(); //on
 			$btnConnect.unbind('click').addClass('disabled').html('Connecting...');
 			WSClient.prototype.__init__.call(mirror, mirror.WSmethods);
 		});
@@ -55,12 +54,23 @@ APIBrowser = WSClient.child({
 		});
 		$('#settingsModal').toggle();
 		
-		// model dropdown menu items
-		$('#mnu-model-select').click(function(){
+		// view dropdown menu items
+		$('#mnu-view-selectmodel').click(function(){
 			if (mirror.isChannelOpen())
 			{
 				mirror.hideAllMain();
 				$('#container-tblModel').slideToggle('slow');
+			}
+			else
+			{
+				mirror.alert('You are not connected to the server', 'error');
+			}
+		});
+		$('#mnu-view-jobbrowser').click(function(){
+			if (mirror.isChannelOpen())
+			{
+				mirror.hideAllMain();
+				$('#container-jobBrowser').slideToggle('slow');
 			}
 			else
 			{
@@ -72,11 +82,10 @@ APIBrowser = WSClient.child({
 		
 		// select elements of server model for inspection
 		$('#btn-selectModel').click(function(){
-			mirror.toggleWorking(); //on
 			mirror.clientModel = [];
 			for (var i=0; i<mirror.serverModel.length; i++)
 			{
-				if ($('#chkbx-serverModel-'+i).attr('checked') == 'checked')
+				if ($('#chkbx-serverModel-'+mirror.callToString(mirror.serverModel[i], true)).attr('checked') == 'checked')
 				{
 					mirror.clientModel.push(mirror.serverModel[i]);
 				}
@@ -89,11 +98,38 @@ APIBrowser = WSClient.child({
 			mirror.send('SaveCM', mirror.clientModel);
 			mirror.alert('Client model saved to the server and the cookie.');
 			mirror.hideAllMain();
-			mirror.toggleWorking(); //off
 		});
 		
 		// close the select model menu
 		$('#btn-selectModel-close').click(this.hideAllMain);
+		
+		$tblModel = $('#tblModel');
+		// select all models from model menu
+		$('#btn-selectModel-selectAll').click(function(){
+			$tblModel.find('input').attr('checked','checked');
+		});
+		
+		// deselect all models from model menu
+		$('#btn-selectModel-deselectAll').click(function(){
+			$tblModel.find('input').removeAttr('checked');
+		});
+		
+		
+		// pause/unpause the job broadcast
+		$('#btn-jobBrowser-broadcastControl').click(function(){
+			if (mirror.broadcastPaused)
+			{
+				mirror.send('BroadcastControl','Start');
+				$(this).html('Receiving (click to pause)');
+				mirror.broadcastPaused = false;
+			}
+			else
+			{
+				mirror.send('BroadcastControl','Stop');
+				$(this).html('Paused (click to unpause)');
+				mirror.broadcastPaused = true;
+			}
+		});
 		
 		
 		/********** SAVED DATA WINDOW ***********/
@@ -103,7 +139,7 @@ APIBrowser = WSClient.child({
 		$savedData.toggle();
 		$('#btn-savedData').click(function(){
 			$savedData.slideToggle('fast', function(){
-				$('#btn-savedData').html($(this).is(':visible')?' <i class="icon-chevron-up"></i>Saved Data':' <i class="icon-chevron-down"></i>Saved Data');
+				$('#btn-savedData').html($(this).is(':visible')?' <i class="icon-chevron-up"></i>Saved Data' : ' <i class="icon-chevron-down"></i>Saved Data');
 			});
 		});
 		
@@ -160,20 +196,25 @@ APIBrowser = WSClient.child({
 				{
 					if (jQuery.inArray(mirror.serverModel[i], mirror.clientModel) > -1)
 					{
-						$('#chkbx-serverModel-'+i).attr('checked','checked');
+						$('#chkbx-serverModel-'+mirror.callToString(mirror.serverModel[i], true)).attr('checked','checked');
 					}
 					else
 					{
-						$('#chkbx-serverModel-'+i).removeAttr('checked');
+						$('#chkbx-serverModel-'+mirror.callToString(mirror.serverModel[i], true)).removeAttr('checked');
 					}
 				}
-				mirror.alert('Client model restored from ' + restoreFrom.replace(/data/g, ''));
+				mirror.alert('Client model restored from ' + restoreFrom.replace('data', ''));
 			}
 		});
 		
-		// force refresh of selected data
+		// set timers to refresh saved data automatically
+		this.timer_switch = true;
 		var cookieDataRefresh = this.getCookieDataRefresh();
 		var serverDataRefresh = this.getServerDataRefresh();
+		this.timer_cookiedata = setInterval(cookieDataRefresh, INTERVAL_COOKIEDATA * 1000);
+		this.timer_serverdata = setInterval(serverDataRefresh, INTERVAL_SERVERDATA * 1000);
+		
+		// force refresh of selected data
 		$('#btn-RefreshCMSaves').click(function(){
 			$savedData.find('input').each(function(){
 				if($(this).attr('checked') == 'checked')
@@ -190,9 +231,6 @@ APIBrowser = WSClient.child({
 			});
 		});
 		
-		// set timers to refresh saved data automatically
-		this.timer_cookiedata = setInterval(cookieDataRefresh, INTERVAL_COOKIEDATA * 1000);
-		this.timer_serverdata = setInterval(serverDataRefresh, INTERVAL_SERVERDATA * 1000);
 	},
 	
 	/*********** MISC INTERFACE METHODS ***********/
@@ -240,9 +278,9 @@ APIBrowser = WSClient.child({
 		var $savedData = $('#savedData');
 		return function()
 		{
-			if ($savedData.is(':hidden'))
+			if ($savedData.is(':hidden') || !mirror.timer_switch)
 			{
-				return null;
+				return;
 			}
 			var cookievalue = readCookie('APIBrowser_ClientModel_'+mirror.cid);
 			mirror.savedCM['cookiedata'] = (cookievalue) ? jQuery.parseJSON(cookievalue) : [];
@@ -257,11 +295,13 @@ APIBrowser = WSClient.child({
 		var $savedData = $('#savedData');
 		return function()
 		{
-			if (mirror.isChannelOpen() && $savedData.is(':visible'))
+			if ($savedData.is(':hidden') || !mirror.timer_switch || !mirror.isChannelOpen())
 			{
-				mirror.send('GetSavedCM');
-				$('#serverdata').html('Requested...');
+				return;
 			}
+			
+			mirror.send('GetSavedCM');
+			$('#serverdata').html('Requested...');
 		};
 	},
 	
@@ -283,15 +323,16 @@ APIBrowser = WSClient.child({
 		var api = {};
 		for (var i = 0; i < this.savedCM[dataType].length; i++)
 		{
-			var call = this.savedCM[dataType][i];
-			if (!$.isArray(api[call['api']]))
+			var apiName = this.savedCM[dataType][i].split('.')[0];
+			if (!$.isArray(api[apiName]))
 			{
-				api[call['api']] = [];
+				api[apiName] = [];
 			}
-			api[call['api']].push(call);
+			api[apiName].push(this.savedCM[dataType][i]);
 		}
 		
 		// create visual representation
+		var mirror = this;
 		for (var apiName in api)
 		{
 			var menu = '';
@@ -310,40 +351,44 @@ APIBrowser = WSClient.child({
 					$('#chkbx-'+dataType).attr('checked','checked');
 				})
                 .tooltip({"placement" : "bottom",
-                          "html": true
+                          "html": true,
+						  "trigger": "manual"
                         })
+				.hover(function(){
+					$(this).tooltip('toggle');
+					mirror.timer_switch = !mirror.timer_switch;
+				})
 				.appendTo('#'+dataType);
 		}
 	},
 	
 	// create string representation of a single API call
-	callToString: function(call)
+	callToString: function(call, idAttr)
 	{
-		return call['api'] + ' <i class="icon-arrow-right"></i> ' + 
-			call['method'] + ' <i class="icon-chevron-left"></i> ' + 
-			call['args'].join(', ') + ' <i class="icon-chevron-right"></i> ';
+		if (def(idAttr,false))
+		{
+			return call.replace(/[\.\(,]\s*/g, '-').replace(')','');
+		}
+		else
+		{
+			return call.replace('.',' <i class="icon-arrow-right"></i> ')
+				.replace('(',' <i class="icon-chevron-left"></i> ')
+				.replace(')',' <i class="icon-chevron-right"></i> ');
+		}
 	},
 	
 	// toggle the "working" label
-	toggleWorking: function()
+	/* unused
+ 	toggleWorking: function()
 	{
 		$('#label-working').css('left', Math.round($(document).width()/2) - Math.round($('#label-working').width()/2)); // reposition
 		$('#label-working').slideToggle('fast');
-	},
+	}, */
 	
 	// hide all main area containers
 	hideAllMain: function()
 	{
 		$('.m-a-c').slideUp('slow');
-	},
-	
-	/************** MISC **************/
-	
-	// print a message in console with a time sig
-	log: function(msg)
-	{
-		var t = new Date();
-		console.log('['+t.getHours()+':'+t.getMinutes()+':'+t.getSeconds()+':'+t.getMilliseconds()+'] '+msg);
 	},
 	
 	
@@ -366,13 +411,12 @@ APIBrowser = WSClient.child({
 		var tmp = Array();
 		for (var i=0; i<servermodel.length; i++)
 		{
-			tmp.push('<tr><td><label class="checkbox"><input type="checkbox" id="chkbx-serverModel-'+i+'">');
+			tmp.push('<tr><td><label class="checkbox"><input type="checkbox" id="chkbx-serverModel-'+this.callToString(servermodel[i], true)+'">');
 			tmp.push(this.callToString(servermodel[i]));
 			tmp.push('</label></td></tr>');
 		}
 		$tblModel.html(tmp.join(''));
 		$('#container-tblModel').slideToggle('slow');
-		this.toggleWorking(); //off
 	},
 	
 	// receive client model data that was saved on the server
@@ -391,6 +435,16 @@ APIBrowser = WSClient.child({
 			this.savedCM['serverdata'] = clientmodel;
 		}
 		this.savedCMtoString('serverdata');
+	},
+	
+	// receive client data model chunk describing a single job
+	JobInfo: function(jobdata)
+	{
+		$('#tblJobs').append('<tr><td>'
+			+ jobdata['sig'] + '</td><td>'
+			+ jobdata['start'] + '</td><td>'
+			+ jobdata['end'] + '</td><td><a href="rawjob.php?id='
+			+ jobdata['_id'] + '" target="_blank">See Raw</a></td></tr>');
 	},
 	
 	// connection has been established to the server

@@ -22,16 +22,13 @@
 	display: block;
 	text-align:left;
 }
-#savedData ul li div{
-	display: inline;
-}
 #savedData ul li:nth-child(2){
 	padding-left: 5em;
 }
-#label-working {
+/*#label-working {
 	position: absolute;
 	top: 0px;
-}
+}*/
 body, html {
 	background-color: #fff;
 	height: 100%;
@@ -42,7 +39,7 @@ body, html {
 .list-horizontal {
 	list-style: none;
 }
-.list-horizontal li {
+.list-horizontal li, .list-horizontal li div {
 	display: inline;
 }
 .alert .badge {
@@ -85,7 +82,7 @@ $(function(){
 </script>
 </head>
 <body>
-<span class="label label-success" id="label-working">Working...</span>
+<!-- <span class="label label-success" id="label-working">Working...</span> //-->
 <div class="container" id="container-main">
 
 	<!-- Navbar Top //-->
@@ -96,12 +93,18 @@ $(function(){
 			<ul class="nav">
 				<li class="divider-vertical"></li>
 				<li class="dropdown" id="btn-model-dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown" data-target="#"><i class="icon-list"></i> Model <b class="caret"></b></a>
+					<a class="dropdown-toggle" data-toggle="dropdown" data-target="#"><i class="icon-list"></i> View <b class="caret"></b></a>
 					<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-						<li><a href="#" tabindex="-1" id="mnu-model-select">Select Model</a></li>
-						<li><a href="#" tabindex="-1" id="mnu-model-">Stuff</a></li>
-						<li><a href="#" tabindex="-1" id="mnu-model-">Stuff</a></li>
-						<li><a href="#" tabindex="-1" id="mnu-model-">Stuff</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-view-selectmodel">Select Model</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-view-jobbrowser">Job Browser</a></li>
+					<!--
+						<li><a href="#" tabindex="-1" id="mnu-view-">Stuff</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-view-">Stuff</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-view-">Stuff</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-view-">Stuff</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-view-">Stuff</a></li>
+						<li><a href="#" tabindex="-1" id="mnu-view-">Stuff</a></li>
+					//-->
 					</ul>
 				</li>
 				<li class="divider-vertical"></li>
@@ -154,8 +157,30 @@ $(function(){
 	<div id="container-tblModel" class="m-a-c">
 		<table class="table table-bordered table-condensed table-hover" id="tblModel">
 		</table>
-		<button id="btn-selectModel" class="btn btn-large">Select Model</button>
-		<button id="btn-selectModel-close" class="btn btn-large">Close</button>
+		<ul class="list-horizontal">
+			<li>
+				<div class="btn-group">
+					<button id="btn-selectModel-selectAll" class="btn btn-large">Select All</button>
+					<button id="btn-selectModel-deselectAll" class="btn btn-large">Deselect All</button>
+				</div>
+			</li>
+			<li>&nbsp;</li>
+			<li>
+				<div class="btn-group">
+					<button id="btn-selectModel" class="btn btn-large btn-success">Select Model</button>
+					<button id="btn-selectModel-close" class="btn btn-large">Close Without Selecting</button>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+	<div id="container-jobBrowser" class="m-a-c">
+		Range: Last 10 minutes.<br />
+		Status: <a href="#" id="btn-jobBrowser-broadcastControl" class="btn btn-small btn-primary">Paused (click to unpause)</a>
+		<br /><br />
+		<table class="table table-bordered table-condensed table-hover" id="tblJobs">
+		<tr><th>Call</th><th>Start</th><th>End</th><th>Data</th></tr>
+		</table>
 	</div>
 	
 	<div class="clearfix"><br /></div>

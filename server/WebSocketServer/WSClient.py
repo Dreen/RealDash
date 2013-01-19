@@ -1,14 +1,15 @@
 from time import time
 
 from WebSocketServer.WSMsg import Msg
-from WebSocketServer.Misc import Logger, IDCollisionWarning
+from WebSocketServer.Misc import Logger
+from db import getDB
 
 
 # This class aggregates all clients currently connected to the server
 class ClientPool:
-	def __init__(self, db=None):
+	def __init__(self):
 		self.clients = []
-		self.db = db
+		# self.db = getDB()
 	
 	def add(self, client):
 		self.clients.append(client)
@@ -31,21 +32,27 @@ class ClientPool:
 
 		
 class Client:
-	def __init__(self, environ={}, serverModel={}, cPool=ClientPool(), db=None, msgHandler=None):
+	def __init__(self, environ={}, cPool=ClientPool(), msgHandler=None):
 		# properties
 		self.environ = environ
 		self.id = None
-		self.broadcastPaused = True # TODO unique
+		self.broadcastPaused = True
 		
 		# resources
-		self.serverModel = serverModel
+		self.serverModel = {}
 		self.msgHandler = msgHandler
-		self.db = db
-		self.model = []
+		self.db = getDB()
+		self.model = [] # TODO this has to change its name everywhere to "client request model"
+		self.dataModel = []
 		self.out = Logger()
 		self.cPool = cPool
 		self.channel = environ["wsgi.websocket"]
 		
+		# rewrite the server model
+		self.db.connection.start_request()
+		modeldb = self.db.servermodel.find()
+		for call in modeldb:
+			self.serverModel[call['sig']] = {'api':call['api'],'method':call['method'],'args':call['args']}
 		self.log('Connected: %s (ID: %s)' % (self.environ['REMOTE_ADDR'], self.id))
 	
 	# def getID(len):
@@ -61,12 +68,13 @@ class Client:
 		
 	# read all client data from the db
 	def readDB(self):
-		self.updateDB()
 		data = self.db.clients.find({'uid': self.id})
-		if data.count() != 1:
-			self.log('Possible ID collision')
-			raise IDCollisionWarning(self.id)
-		return data[0]
+		if data.count() > 1:
+			# self.log('Possible ID collision')
+			# raise IDCollisionWarning(self.id)
+			return False
+		else:
+			return data[0]
 	
 	def log(self, msg):
 		if not self.out.closed:

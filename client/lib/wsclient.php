@@ -27,7 +27,7 @@ if (isset($_COOKIE['APIBrowser_ClientID']) &&
 	$clients->find(array('uid' => $_COOKIE['APIBrowser_ClientID']))->count() === 1)
 { // an old id stored in a cookie and there is an entry in db confirming that
 	$clientID = $_COOKIE['APIBrowser_ClientID'];
-	$clients->update(array('uid' => $clientID), array('$set'=>array('lastip' => $_SERVER['REMOTE_ADDR'])));
+	$clients->update(array('uid' => $clientID), array('$set'=>array('lastip' => $_SERVER['REMOTE_ADDR'], "lastSeen" => time())));
 }
 else
 { // generate a new id
