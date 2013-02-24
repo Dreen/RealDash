@@ -6,13 +6,27 @@ var _defs	= require('underscore').defaults,
 var misc	= require('../misc.js');
 
 // construct a new object for requests
-function API (verbose)
+function API (args)
 {
-	this.verbose = misc.def(verbose, false);
-	this.cred = JSON.parse(fs.readFileSync('cred/' + this.constructor.name + '.cred').toString());
+	// default arguments
+	args = _defs(args, {
+		'0': false
+	});
+	
+	this.verbose = args['0'];
+	
+	// load credentials
+	if (fs.existsSync('cred/' + this.constructor.name + '.cred'))
+	{
+		this.cred = JSON.parse(fs.readFileSync('cred/' + this.constructor.name + '.cred').toString());
+	}
+	else
+	{
+		this.cred = JSON.parse(fs.readFileSync('cred/API.cred').toString());
+	}
 	
 	// default callback
-	this.callback = function (data) { console.log(data); };
+	this.callback = function (data) { console.log("%j", data); };
 }
 
 // launch an async request
@@ -71,6 +85,10 @@ API.prototype.go = function(opts, post, get) {
 	if (misc.concrete(post))
 	{
 		req.write(query.stringify(post));
+		if (this.verbose)
+		{
+			console.log('POST data: ' + query.stringify(post));
+		}
 	}
 	
 	if (this.verbose)
