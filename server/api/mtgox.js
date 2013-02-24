@@ -12,13 +12,14 @@ function MtGox()
 
 util.inherits(MtGox, API); 
 
-MtGox.prototype.request = function(callName, post, get) {
-	var raw		= def(raw,	true),
+MtGox.prototype.request = function(callName, post, get, raw)
+{
+	var raw		= def(raw,	1),
 		post	= def(post,	{}),
 		get		= def(get,	{});
 	
 	post['nonce'] = (new Date()).getTime() * 1000;
-	get['raw'] = 1;
+	get['raw'] = raw;
 	var sign = hmac('sha512', new Buffer(this.cred['SECRET'], 'base64'));
 	sign.update(query.stringify(post));
 	
@@ -30,6 +31,11 @@ MtGox.prototype.request = function(callName, post, get) {
 			'Rest-Sign':	sign.digest('base64')
 		}
 	}, post, get);
+};
+
+MtGox.prototype.currency = function(currency, call_name, since)
+{
+	this.request('BTC' + currency + '/' + call_name, {}, {'since':since});
 };
 
 exports.MtGox = MtGox;
