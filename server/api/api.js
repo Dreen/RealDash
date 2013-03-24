@@ -1,5 +1,5 @@
 var _defs	= require('underscore').defaults,
-	fs		= require('fs'),
+	fs	= require('fs'),
 	request	= require('https').request,
 	query	= require('querystring');
 
@@ -32,10 +32,9 @@ function API (args)
 // launch an async request
 API.prototype.go = function(opts, post, get) {
 	// default variables
-	var mirror	= this,
-		data	= misc.def(data,	''),
-		post	= misc.def(post,	{}),
-		get		= misc.def(get,		{});
+	mirror	= this;
+	post	= post || {};
+	get	= get || {};
 	
 	// default options
 	opts = _defs(opts, {

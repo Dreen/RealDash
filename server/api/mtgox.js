@@ -2,8 +2,7 @@ var query	= require('querystring'),
 	hmac	= require('crypto').createHmac,
 	util	= require('util');
 
-var API		= require('./api.js').API,
-	def		= require('../misc.js').def;
+var API		= require('./api.js').API;
 
 function MtGox()
 {
@@ -14,9 +13,9 @@ util.inherits(MtGox, API);
 
 MtGox.prototype.request = function(callName, post, get, raw)
 {
-	var raw		= def(raw,	1),
-		post	= def(post,	{}),
-		get		= def(get,	{});
+	raw	= raw || 1;
+	post	= post || {};
+	get	= get || {};
 	
 	post['nonce'] = (new Date()).getTime() * 1000;
 	get['raw'] = raw;

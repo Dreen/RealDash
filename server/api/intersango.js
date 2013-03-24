@@ -2,8 +2,7 @@ var query	= require('querystring'),
 	hmac	= require('crypto').createHmac,
 	util	= require('util');
 
-var API		= require('./api.js').API,
-	def		= require('../misc.js').def;
+var API		= require('./api.js').API;
 
 function Intersango()
 {
@@ -19,17 +18,11 @@ Intersango.prototype.request_data = function(call_name)
 		method:	'GET',
 		path:	'/api/' + call_name + '.php'
 	});
-	
-	/*
-	{
-		api_key: this.cred['api_key']
-	}
-	*/
 }
 
 Intersango.prototype.request_auth = function(call_name, params)
 {
-	var post	= def(params,	{});
+	post	= params || {};
 	
 	post['api_key'] = this.cred['api_key'];
 	

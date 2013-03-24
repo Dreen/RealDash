@@ -1,11 +1,11 @@
 var io = require('socket.io');
 
-var misc	= require('./misc.js');
+//var misc	= require('./misc.js');
 
 // run as main module only
 if (!module.parent)
 {
-	var port = misc.def(process.argv[2], 8000);
+	var port = process.argv[2] || 8000;
 	
 	// TODO connect to mongo?
 	
