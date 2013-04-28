@@ -3,10 +3,12 @@ var assert = require('assert'),
 
 describe('with instance', function()
 {
+	var api, request;
+	
 	beforeEach(function(done)
 	{
-		this.api = new API(true);
-		this.request = {
+		api = new API(true);
+		request = {
 			'host': 'raw.github.com',
 			'path': '/Dreen/BitcoinAPIbrowser/master/server/test/data/'
 		};
