@@ -1,2 +1,4 @@
  - underscore
  - socket.io
+ - mocha
+ 
