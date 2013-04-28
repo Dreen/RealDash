@@ -6,13 +6,6 @@ var data_address = {
 	'path': '/Dreen/BitcoinAPIbrowser/master/server/test/data/'
 }
 
-if (module == require.main)
-{
-	var mocha = require('child_process').spawn('mocha', [ '--colors', '--ui', 'exports', '--reporter', 'spec', __filename ]);
-	mocha.stdout.pipe(process.stdout);
-	mocha.stderr.pipe(process.stderr);
-}
-
 exports['with instance'] = {
 
 	before: function(done)
