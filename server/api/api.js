@@ -52,7 +52,7 @@ API.prototype.go = function(opts, post, get) {
 	}
 	
 	// extra headers
-	opts.headers['User-Agent'] = misc.def(opts.headers['User-Agent'], "Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/10.0");
+	opts.headers['User-Agent'] = opts.headers['User-Agent'] || "Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/10.0";
 	if (misc.concrete(post))
 	{
 		opts.headers['Content-type'] = "application/x-www-form-urlencoded";
