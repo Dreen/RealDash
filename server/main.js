@@ -28,7 +28,7 @@ if (!module.parent)
 	process.on('SIGINT', shutdown);
 	
 	// start the server
-	console.log('Serving at port ' + port);
+	console.log('Serving at port %d', port);
 	var server = io.listen(port);
 	
 	// server handler

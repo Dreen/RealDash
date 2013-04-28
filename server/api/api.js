@@ -26,7 +26,7 @@ function API (args)
 	}
 	
 	// default callback
-	this.callback = function (data) { console.log("%j", data); };
+	this.callback = function (data) { console.log('%j', data); };
 }
 
 // launch an async request
@@ -68,7 +68,7 @@ API.prototype.go = function(opts, post, get) {
 		result.on('end', function() {
 			if (mirror.verbose)
 			{
-				console.log('<- Received ' + buffer.length + ' bytes');
+				console.log('<- Received %d bytes', buffer.length);
 			}
 			var data = JSON.parse(buffer);
 
@@ -81,7 +81,7 @@ API.prototype.go = function(opts, post, get) {
 	
 	// error handling
 	req.on('error', function(e) {
-		console.log('warning: problem with request: ' + e.message);
+		console.log('warning: problem with request: %s', e.message);
 	});
 	
 	// write request body
@@ -90,13 +90,13 @@ API.prototype.go = function(opts, post, get) {
 		req.write(query.stringify(post));
 		if (this.verbose)
 		{
-			console.log('POST data: ' + query.stringify(post));
+			console.log('POST data: %s', query.stringify(post));
 		}
 	}
 	
 	if (this.verbose)
 	{
-		console.log('-> ' + opts['method'] + ' ' + opts['host'] + ':' + opts['port'] + opts['path']);
+		console.log('-> %s %s:%d%s', opts['method'], opts['host'], opts['port'], opts['path']);
 	}
 
 	// finish the request
