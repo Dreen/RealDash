@@ -4,7 +4,7 @@ var assert = require('assert'),
 var data_address = {
 	'host': 'raw.github.com',
 	'path': '/Dreen/BitcoinAPIbrowser/master/server/test/data/'
-}
+};
 
 module.exports = {
 
@@ -24,4 +24,4 @@ module.exports = {
 			done();
 		}
 	}
-}
+};
