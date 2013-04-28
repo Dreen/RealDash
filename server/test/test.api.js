@@ -15,15 +15,23 @@ describe('with instance', function()
 		};
 	});
 
-	describe('simple GET retrieval and parsing', function()
+	describe('setting verbose mode', function()
 	{
-		it('should parse OK', function(done)
+		it('should be set to true', function()
 		{
-			this.request['path'] += 'simple.json';
-			var result = api.go(this.request);
-			assert.ok(result['result'] == 'OK');
-			done();
+			assert.strictEqual(api.verbose, true);
 		});
 	});
+
+	//describe('simple GET retrieval and parsing', function()
+	//{
+	//	it('should parse OK', function(done)
+	//	{
+	//		request['path'] += 'simple.json';
+	//		var result = api.go(this.request);
+	//		assert.ok(result['result'] == 'OK');
+	//		done();
+	//	});
+	//});
 });
 
