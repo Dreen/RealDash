@@ -29,6 +29,21 @@ describe('with instance', function()
 		});
 	});
 
+	describe('callback', function()
+	{
+		it('should be set to OK', function()
+		{
+			var result;
+			api.setCallback(function(data)
+			{
+				result = data;
+			});
+			api.callback('OK');
+
+			assert.equal(result, 'OK');
+		}
+	});
+
 /*
 	describe('simple GET retrieval and parsing', function()
 	{
