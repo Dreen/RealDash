@@ -6,12 +6,19 @@ var data_address = {
 	'path': '/Dreen/BitcoinAPIbrowser/master/server/test/data/'
 }
 
-exports['simple GET retrieval and parsing'] = function(done)
-{
-	var api = new API(true);
-	var request = data_address;
-	request['path'] += 'simple.json';
-	var result = api.go(request);
-	assert.ok(result['result'] == 'OK');
-	done();
-};
+exports['with instance'] = {
+
+	before: function(done)
+	{
+		this.api = new API(true);
+		this.request = data_address;
+	},
+
+	'simple GET retrieval and parsing': function(done)
+	{
+		this.request['path'] += 'simple.json';
+		var result = api.go(this.request);
+		assert.ok(result['result'] == 'OK');
+		done();
+	}
+}
