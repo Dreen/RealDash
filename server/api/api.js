@@ -111,4 +111,4 @@ API.prototype.setCallback = function(cb) {
 	}
 };
 
-exports.API = API;
+module.exports = API;
