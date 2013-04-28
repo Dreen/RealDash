@@ -13,6 +13,22 @@ describe('with instance', function()
 		});
 	});
 
+	describe('setting verbose mode by child object', function()
+	{
+		it('should be set to true', function()
+		{
+			var util = require('util');
+			function TestAPI()
+			{
+				TestAPI.super_.call(this, arguments);
+			}
+			util.inherits(TestAPI, API);
+			var testapi = new TestAPI(true);
+
+			assert.strictEqual(testapi.verbose, true);
+		});
+	});
+
 	describe('simple GET retrieval and parsing', function()
 	{
 		it('should parse OK', function(done)
