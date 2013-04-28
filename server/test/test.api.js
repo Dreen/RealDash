@@ -41,7 +41,7 @@ describe('with instance', function()
 			api.callback('OK');
 
 			assert.equal(result, 'OK');
-		}
+		});
 	});
 
 /*
