@@ -6,7 +6,7 @@ var data_address = {
 	'path': '/Dreen/BitcoinAPIbrowser/master/server/test/data/'
 }
 
-exports['with instance'] = {
+module.exports['with instance'] = {
 
 	before: function(done)
 	{
