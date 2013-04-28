@@ -72,10 +72,7 @@ API.prototype.go = function(opts, post, get) {
 			}
 			var data = JSON.parse(buffer);
 
-			if (typeof mirror.callback == 'function')
-			{
-				mirror.callback(data);
-			}
+			mirror.callback(data);
 		});
 	});
 	
