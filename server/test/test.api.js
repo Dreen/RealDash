@@ -1,27 +1,25 @@
 var assert = require('assert'),
 	API = require('../api/api.js');
 
-var data_address = {
-	'host': 'raw.github.com',
-	'path': '/Dreen/BitcoinAPIbrowser/master/server/test/data/'
-};
-
-module.exports = {
-
-	before: function(done)
+describe('with instance', function()
+{
+	beforeEach(function(done)
 	{
 		this.api = new API(true);
-		this.request = data_address;
-	},
+		this.request = {
+			'host': 'raw.github.com',
+			'path': '/Dreen/BitcoinAPIbrowser/master/server/test/data/'
+		};
+	});
 
-	'with instance':
+	describe('simple GET retrieval and parsing', function()
 	{
-		'simple GET retrieval and parsing': function(done)
+		it('should parse OK', function(done)
 		{
 			this.request['path'] += 'simple.json';
 			var result = api.go(this.request);
 			assert.ok(result['result'] == 'OK');
 			done();
-		}
-	}
-};
+		});
+	});
+});
