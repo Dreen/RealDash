@@ -3,22 +3,7 @@ var assert = require('assert'),
 
 describe('with instance', function()
 {
-	var api = new API(true), 
-	request = {
-		'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-		'path': '/~ec2-user/data/',
-		'port': 80
-	};
-
-	//beforeEach(function(done)
-	//{
-	//	api = new API(true);
-	//	request = {
-	//		'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-	//		'path': '/~ec2-user/data/',
-	//		'port': 80
-	//	};
-	//});
+	var api = new API(true);
 
 	describe('setting verbose mode', function()
 	{
@@ -28,15 +13,18 @@ describe('with instance', function()
 		});
 	});
 
-	//describe('simple GET retrieval and parsing', function()
-	//{
-	//	it('should parse OK', function(done)
-	//	{
-	//		request['path'] += 'simple.json';
-	//		var result = api.go(this.request);
-	//		assert.ok(result['result'] == 'OK');
-	//		done();
-	//	});
-	//});
+	describe('simple GET retrieval and parsing', function()
+	{
+		it('should parse OK', function(done)
+		{
+			var result = api.go({
+				'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
+				'path': '/~ec2-user/data/simple.json',
+				'port': 80
+			});
+			assert.ok(result['result'] == 'OK');
+			done();
+		});
+	});
 });
 
