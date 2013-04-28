@@ -16,13 +16,13 @@ function API (args)
 	this.verbose = args['0'];
 	
 	// load credentials
-	if (fs.existsSync('cred/' + this.constructor.name + '.cred'))
+	if (fs.existsSync('./cred/' + this.constructor.name + '.cred'))
 	{
-		this.cred = JSON.parse(fs.readFileSync('cred/' + this.constructor.name + '.cred').toString());
+		this.cred = JSON.parse(fs.readFileSync('./cred/' + this.constructor.name + '.cred').toString());
 	}
 	else
 	{
-		this.cred = JSON.parse(fs.readFileSync('cred/API.cred').toString());
+		this.cred = JSON.parse(fs.readFileSync('./cred/API.cred').toString());
 	}
 	
 	// default callback
