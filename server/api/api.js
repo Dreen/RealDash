@@ -40,7 +40,7 @@ API.prototype.go = function(opts, post, get) {
 	opts = _defs(opts, {
 		host:		'',
 		path:		'',
-		port:		443,
+		port:		443,	// TODO: support for normal HTTP, add an option
 		method:		'POST',
 		headers:	{}
 	});
