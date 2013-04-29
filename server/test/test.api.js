@@ -5,41 +5,43 @@ describe('with instance', function()
 {
 	var api = new API(true);
 
-	describe('setting verbose mode', function()
+	it('setting verbose mode', function()
 	{
-		it('should be set to true', function()
-		{
-			assert.strictEqual(api.verbose, true);
-		});
+		assert.strictEqual(api.verbose, true);
+	});
+	
+	it('loading default credentials', function()
+	{
+		assert.strictEqual(api.cred, {});
 	});
 
-	describe('setting verbose mode by child object', function()
+	describe('and with a child instance', function()
 	{
-		it('should be set to true', function()
+		var util = require('util');
+		function TestAPI()
 		{
-			var util = require('util');
-			function TestAPI()
-			{
-				TestAPI.super_.call(this, arguments);
-			}
-			util.inherits(TestAPI, API);
-			var testapi = new TestAPI(true);
-
+			TestAPI.super_.call(this, arguments);
+		}
+		util.inherits(TestAPI, API);
+		var testapi = new TestAPI(true);
+		
+		it('setting verbose mode by child object', function()
+		{
 			assert.strictEqual(testapi.verbose, true);
 		});
 	});
 
-	describe('callback', function()
+	describe('simple callback', function()
 	{
+		var result;
+		api.setCallback(function(data)
+		{
+			result = data;
+		});
+		api.callback('OK');
+		
 		it('should be set to OK', function()
 		{
-			var result;
-			api.setCallback(function(data)
-			{
-				result = data;
-			});
-			api.callback('OK');
-
 			assert.equal(result, 'OK');
 		});
 	});
