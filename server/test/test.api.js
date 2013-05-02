@@ -1,50 +1,59 @@
 var assert = require('assert'),
 	API = require('../api/api.js');
 
-describe('with instance', function()
+function testSuite(APIOBJ, objname)
 {
-	var api = new API(true);
+	return function()
+	{
+		describe('normal instance', function()
+		{
+			var api = new APIOBJ();
 
-	it('setting verbose mode', function()
-	{
-		assert.strictEqual(api.verbose, true);
-	});
-	
-	it('loading default credentials', function()
-	{
-		assert.deepEqual(api.cred, {});
-	});
+			it(' - verbosity level', function()
+			{
+				assert.strictEqual(api.verbose, false);
+			});
+			
+			it(' - loading default credentials (empty object)', function()
+			{
+				assert.deepEqual(api.cred, {name: objname});
+			});
 
-	describe('and with a child instance', function()
-	{
-		var util = require('util');
-		function TestAPI()
-		{
-			TestAPI.super_.call(this, arguments);
-		}
-		util.inherits(TestAPI, API);
-		var testapi = new TestAPI(true);
-		
-		it('setting verbose mode by child object', function()
-		{
-			assert.strictEqual(testapi.verbose, true);
+			it(' - setting a simple callback', function()
+			{
+				var result;
+				api.setCallback(function(data)
+				{
+					result = data;
+				});
+				api.callback('OK');
+				assert.equal(result, 'OK');
+			});
 		});
-	});
 
-	describe('simple callback', function()
-	{
-		var result;
-		api.setCallback(function(data)
+		describe('verbose instance', function()
 		{
-			result = data;
+			var api = new APIOBJ(true);
+			
+			it(' - verbosity level', function()
+			{
+				assert.strictEqual(api.verbose, true);
+			});
 		});
-		api.callback('OK');
-		
-		it('should be set to OK', function()
-		{
-			assert.equal(result, 'OK');
-		});
-	});
+	};
+}
+
+// parent
+describe('parent', testSuite(API, "API"));
+
+// child
+var util = require('util');
+function TestAPI()
+{
+	TestAPI.super_.call(this, arguments);
+}
+util.inherits(TestAPI, API);
+describe('child', testSuite(TestAPI, "TestAPI"));
 
 /*
 	describe('simple GET retrieval and parsing', function()
@@ -62,5 +71,4 @@ describe('with instance', function()
 		});
 	});
 */
-});
 
