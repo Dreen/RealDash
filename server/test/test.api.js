@@ -12,7 +12,7 @@ describe('with instance', function()
 	
 	it('loading default credentials', function()
 	{
-		assert.strictEqual(api.cred, {});
+		assert.deepEqual(api.cred, {});
 	});
 
 	describe('and with a child instance', function()
