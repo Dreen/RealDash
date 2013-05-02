@@ -44,6 +44,7 @@ function testSuite(APIOBJ, objname)
 }
 
 // parent
+console.log(API);
 describe('parent', testSuite(API, "API"));
 
 // child
@@ -53,6 +54,7 @@ function TestAPI()
 	TestAPI.super_.call(this, arguments);
 }
 util.inherits(TestAPI, API);
+console.log(TestAPI);
 describe('child', testSuite(TestAPI, "TestAPI"));
 
 /*
