@@ -50,7 +50,7 @@ describe('parent', testSuite(API, "API"));
 var util = require('util');
 function TestAPI()
 {
-	TestAPI.super_.call(this, arguments);
+	TestAPI.super_.apply(this, arguments);
 }
 util.inherits(TestAPI, API);
 describe('child', testSuite(TestAPI, "TestAPI"));

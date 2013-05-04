@@ -6,15 +6,10 @@ var _defs	= require('underscore').defaults,
 var misc	= require('../misc.js');
 
 // construct a new object for requests
-function API (args)
+function API (verbosity)
 {
 	// default arguments
-	args = args || [];
-	args = _defs(args, {
-		'0': false
-	});
-	
-	this.verbose = args['0'];
+	this.verbose = verbosity || false;
 	
 	// load credentials
 	if (fs.existsSync(__dirname + '/cred/' + this.constructor.name + '.cred'))
