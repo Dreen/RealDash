@@ -44,21 +44,19 @@ function testSuite(APIOBJ, objname)
 		describe('GET retrieval', function()
 		{
 			var api = new APIOBJ();
-			var result = {};
-			api.setCallback(function(data)
-			{
-				result = data;
-			});
-
 			it('simple', function(done)
 			{
+				api.setCallback(function(data)
+				{
+					assert.equal(data['result'], 'OK');
+					done();
+				});
+
 				api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 					'path': '/~ec2-user/data/simple.json',
 					'port': 80
 				});
-				assert.equal(result['result'], 'OK');
-				done();
 			});
 		});
 	};

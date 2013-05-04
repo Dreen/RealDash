@@ -1,7 +1,8 @@
 var _defs	= require('underscore').defaults,
-	fs	= require('fs'),
-	request	= require('https').request,
-	query	= require('querystring');
+fs		= require('fs'),
+http 		= require("http")
+https 		= require("https")
+query		= require('querystring');
 
 var misc	= require('../misc.js');
 
@@ -31,13 +32,16 @@ API.prototype.go = function(opts, post, get) {
 	mirror	= this;
 	post	= post || {};
 	get	= get || {};
+
+	// figure out if we want to use https
+	var prot = (opts.port == 443) ? https : http;
 	
 	// default options
 	opts = _defs(opts, {
-		host:		'',
+		host:		'localhost',
 		path:		'',
-		port:		443,	// TODO: support for normal HTTP, add an option
-		method:		'POST',
+		port:		80,
+		method:		'GET',
 		headers:	{}
 	});
 	
@@ -55,7 +59,7 @@ API.prototype.go = function(opts, post, get) {
 	}
 	
 	// create request object
-	var req = request(opts, function (result) {
+	var req = prot.request(opts, function (result) {
 		result.setEncoding('utf8');
 		var buffer = '';
 		result.on('data', function(data) {
