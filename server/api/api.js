@@ -9,6 +9,7 @@ var misc	= require('../misc.js');
 function API (args)
 {
 	// default arguments
+	args = args || [];
 	args = _defs(args, {
 		'0': false
 	});
