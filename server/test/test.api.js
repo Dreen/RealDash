@@ -52,13 +52,12 @@ function testSuite(APIOBJ, objname)
 
 			it('simple', function(done)
 			{
-				var request = api.go({
+				api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 					'path': '/~ec2-user/data/simple.json',
 					'port': 80
 				});
-				api.go(request);
-				assert.ok(result['result'] == 'OK');
+				assert.equal(result['result'], 'OK');
 				done();
 			});
 		});
