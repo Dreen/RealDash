@@ -44,6 +44,7 @@ function testSuite(APIOBJ, objname)
 		describe('GET retrieval', function()
 		{
 			var api = new APIOBJ();
+
 			it('simple', function(done)
 			{
 				api.setCallback(function(data)
@@ -54,7 +55,58 @@ function testSuite(APIOBJ, objname)
 
 				api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-					'path': '/~ec2-user/data/simple.json'
+					'path': '/~ec2-user/data/api.get.simple.json'
+				});
+			});
+
+			it('with a parameter', function(done)
+			{
+				api.setCallback(function(data)
+				{
+					assert.equal(data['result'], 'OK');
+					done();
+				});
+
+				api.go({
+					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
+					'path': '/~ec2-user/data/api.get.param.php'
+				}, null, {
+					'foo': 'bar'
+				});
+			});
+		});
+
+		describe('POST retrieval', function()
+		{
+			var api = new APIOBJ();
+
+			it('simple', function(done)
+			{
+				api.setCallback(function(data)
+				{
+					assert.equal(data['result'], 'OK');
+					done();
+				});
+
+				api.go({
+					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
+					'path': '/~ec2-user/data/api.post.simple.php'
+				});
+			});
+
+			it('with a parameter', function(done)
+			{
+				api.setCallback(function(data)
+				{
+					assert.equal(data['result'], 'OK');
+					done();
+				});
+
+				api.go({
+					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
+					'path': '/~ec2-user/data/api.post.param.php'
+				}, {
+					'foo': 'bar'
 				});
 			});
 		});
