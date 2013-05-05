@@ -45,12 +45,18 @@ API.prototype.go = function(opts, post, get) {
 		headers:	{}
 	});
 	
+	// switch to post if any post data is given
+	if (misc.concrete(post))
+	{
+		opts.method = 'POST';
+	}
+	
 	// write get variables into the query string
 	if (misc.concrete(get))
 	{
 		opts.path += '?' + query.stringify(get);
 	}
-	
+
 	// extra headers
 	opts.headers['User-Agent'] = opts.headers['User-Agent'] || "Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/10.0";
 	if (misc.concrete(post))
