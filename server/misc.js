@@ -1,5 +1,5 @@
-var _values		= require('underscore').values,
-	_without	= require('underscore').without;
+var _values	= require('underscore').values,
+_without	= require('underscore').without;
 
 exports.concrete = function(arr)
 {
