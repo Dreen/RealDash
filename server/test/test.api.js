@@ -90,7 +90,8 @@ function testSuite(APIOBJ, objname)
 
 				api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-					'path': '/~ec2-user/data/api.post.simple.php'
+					'path': '/~ec2-user/data/api.post.simple.php',
+					'method': 'POST'
 				});
 			});
 
