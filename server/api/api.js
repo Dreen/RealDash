@@ -1,7 +1,7 @@
 var _defs	= require('underscore').defaults,
 fs		= require('fs'),
-http 		= require("http")
-https 		= require("https")
+http 		= require('http'),
+https 		= require('https'),
 query		= require('querystring');
 
 var misc	= require('../misc.js');
