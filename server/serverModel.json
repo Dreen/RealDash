@@ -1,0 +1,15 @@
+[
+	{
+		"name" : "TestAPI",
+		"file" : "testapi.js",
+		"author" : "greg.balaga@gmail.com",	
+		"calls" : [
+			{
+				"sig" : "testapi.getSimple()",
+				"method": "getSimple",
+				"args": [ ],
+				"timer" : 30
+			}
+		]
+	}
+]
