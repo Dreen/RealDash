@@ -16,13 +16,11 @@ before(function(done)
 	});
 });
 
-describe('connected', function()
+describe('Bot', function()
 {
-	console.log(mdb);
-	var bot = new Bot(mdb, true);
-
-	it('retrieved TestAPI from db', function()
+	it('serverModel should contain the model of TestAPI', function()
 	{
+		var bot = new Bot(mdb, true);
 		var ref = {
 			"name" : "TestAPI",
 			"file" : "testapi.js",
@@ -39,8 +37,9 @@ describe('connected', function()
 		assert.deepEqual(bot.serverModel['TestAPI'], ref);
 	});
 
-	it('initialised TestAPI correctly', function()
+	it('apis should contain an instance of TestAPI', function()
 	{
+		var bot = new Bot(mdb, true);
 		assert(bot.apis['TestAPI'] instanceof require('../api/testapi.js').TestAPI);
 	});
 });
