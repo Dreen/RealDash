@@ -5,7 +5,7 @@
 		"author" : "greg.balaga@gmail.com",	
 		"calls" : [
 			{
-				"sig" : "testapi.getSimple()",
+				"sig" : "TestAPI.getSimple()",
 				"method": "getSimple",
 				"args": [ ],
 				"timer" : 30
