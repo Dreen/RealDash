@@ -32,7 +32,7 @@ describe('Bot', function()
 			"author" : "greg.balaga@gmail.com",	
 			"calls" : [
 				{
-					"sig" : "testapi.getSimple()",
+					"sig" : "TestAPI.getSimple()",
 					"method": "getSimple",
 					"args": [ ],
 					"timer" : 30
@@ -45,5 +45,27 @@ describe('Bot', function()
 	it('apis should contain an instance of TestAPI', function()
 	{
 		assert(bot.apis['TestAPI'] instanceof require('../api/testapi.js').TestAPI);
+	});
+
+	describe('Events', function()
+	{
+		it('should detect a call made to TestAPI', function(done)
+		{
+			bot.on('called', function(sig)
+			{
+				assert.equal(sig, "testapi.getSimple()");
+				done();
+			});
+		});
+
+		it('should detect a call return from TestAPI', function(done)
+		{
+			bot.on('resulted', function(sig, result)
+			{
+				assert.equal(sig, "testapi.getSimple()");
+				assert.deepEqual(result, {"result": "OK"});
+				done();
+			});
+		});
 	});
 });
