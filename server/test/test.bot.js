@@ -2,7 +2,7 @@ var assert	= require('assert'),
 mongo 		= require('mongodb'),
 Bot		= require('../api/bot.js');
 
-var mdb;
+var mdb, bot;
 before(function(done)
 {
 	mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db)
@@ -18,9 +18,14 @@ before(function(done)
 
 describe('Bot', function()
 {
+	it('fake test to set up the bot instance', function()
+	{
+		bot = new Bot(mdb, true);
+		assert(true);
+	});
+
 	it('serverModel should contain the model of TestAPI', function()
 	{
-		var bot = new Bot(mdb, true);
 		var ref = {
 			"name" : "TestAPI",
 			"file" : "testapi.js",
@@ -39,7 +44,6 @@ describe('Bot', function()
 
 	it('apis should contain an instance of TestAPI', function()
 	{
-		var bot = new Bot(mdb, true);
 		assert(bot.apis['TestAPI'] instanceof require('../api/testapi.js').TestAPI);
 	});
 });
