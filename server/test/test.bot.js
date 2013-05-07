@@ -18,10 +18,10 @@ before(function(done)
 
 describe('Bot', function()
 {
-	it('fake test to set up the bot instance', function()
+	it('set up instance, verbosity should be true', function()
 	{
 		bot = new Bot(mdb, true);
-		assert(true);
+		assert(bot.verboseRequests);
 	});
 
 	it('serverModel should contain the model of TestAPI', function()
