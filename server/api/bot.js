@@ -1,4 +1,6 @@
-var EE = require('events').EventEmitter;
+var
+util	= require('util'),
+EE	= require('events').EventEmitter;
 
 function Bot()
 {
