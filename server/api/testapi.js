@@ -1,5 +1,6 @@
-var util 	= require('util'),
-API		= require('./api.js').API;
+var
+util 	= require('util'),
+API	= require('./api.js').API;
 
 /*
  * A simple API used for testing purposes.
@@ -17,7 +18,17 @@ TestAPI.prototype.getSimple = function()
 	this.go({
 		'host': this.host,
 		'path': '/~ec2-user/data/api.get.simple.json'
-	})
+	});
+};
+
+TestAPI.prototype.postParam = function(foobar)
+{
+	this.go({
+		'host': this.host,
+		'path': '/~ec2-user/data/api.post.param.php'
+	}, {
+		'foo': foobar
+	});
 };
 
 module.exports.TestAPI = TestAPI;
