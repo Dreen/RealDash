@@ -1,6 +1,7 @@
-var assert	= require('assert'),
-mongo 		= require('mongodb'),
-Bot		= require('../api/bot.js');
+var
+assert	= require('assert'),
+mongo 	= require('mongodb'),
+Bot	= require('../api/bot.js');
 
 var mdb, bot;
 before(function(done)
