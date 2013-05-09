@@ -6,6 +6,8 @@ query		= require('querystring');
 
 var misc	= require('../misc.js');
 
+// TODO: move api.js and bot.js up to the server
+
 // construct a new object for requests
 function API (verbosity)
 {
