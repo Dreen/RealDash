@@ -28,15 +28,20 @@ describe('Bot', function()
 	it('serverModel should contain the model of TestAPI', function()
 	{
 		var ref = {
-			"name" : "TestAPI",
-			"file" : "testapi.js",
-			"author" : "greg.balaga@gmail.com",	
-			"calls" : [
+			"name": "TestAPI",
+			"file": "testapi.js",
+			"author": "greg.balaga@gmail.com",	
+			"calls": [
 				{
-					"sig" : "TestAPI.getSimple()",
+					"sig": "TestAPI.getSimple()",
 					"method": "getSimple",
 					"args": [ ],
-					"timer" : 30
+					"timer": 30
+				}, {
+					"sig": "TestAPI.postParam(bar)",
+					"method": "postParam",
+					"args": [ "bar" ],
+					"timer": 20
 				}
 			]
 		};
