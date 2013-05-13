@@ -1,12 +1,13 @@
-var _defs	= require('underscore').defaults,
+var
+_defs		= require('underscore').defaults,
 fs		= require('fs'),
 http 		= require('http'),
 https 		= require('https'),
 query		= require('querystring');
-var misc	= require('../misc.js');
 
-// TODO passing logger
-var log = console.log;
+var
+misc	= require('../misc.js'),
+logger	= require('../log.js');
 
 // construct a new object for requests
 function API (onFinished)
@@ -22,7 +23,7 @@ function API (onFinished)
 	}
 	
 	// default callback
-	this._onFinished = onFinished || function (data) { log('%j', data); };
+	this._onFinished = onFinished || function (data) { logger.info('%j', data); };
 }
 
 // launch an async request
@@ -72,35 +73,24 @@ API.prototype.go = function(opts, post, get)
 			buffer += data;
 		});
 		result.on('end', function() {
-			if (mirror.verbose)
-			{
-				log('<- Received %d bytes', buffer.length);
-			}
-			var data = JSON.parse(buffer);
-
-			mirror._onFinished(data);
+			logger.info('<- Received %d bytes', buffer.length);
+			mirror._onFinished(JSON.parse(buffer));
 		});
 	});
 	
 	// error handling
 	req.on('error', function(e) {
-		log('warning: problem with request: %s', e.message);
+		logger.error('warning: problem with request: %s', e.message);
 	});
 	
 	// write request body
 	if (misc.concrete(post))
 	{
 		req.write(query.stringify(post));
-		if (log)
-		{
-			log('POST data: %s', query.stringify(post));
-		}
+		logger.info('POST data: %s', query.stringify(post));
 	}
 	
-	if (log)
-	{
-		log('-> %s %s:%d%s', opts['method'], opts['host'], opts['port'], opts['path']);
-	}
+	logger.info('-> %s %s:%d%s', opts['method'], opts['host'], opts['port'], opts['path']);
 
 	// finish the request
 	req.end();

@@ -1,5 +1,6 @@
-var assert = require('assert'),
-	API = require('../api/api.js');
+var
+assert = require('assert'),
+API = require('../api/api.js');
 
 function testSuite(APIOBJ, objname)
 {
