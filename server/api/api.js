@@ -96,12 +96,4 @@ API.prototype.go = function(opts, post, get)
 	req.end();
 };
 
-// set custom callback
-API.prototype.setCallback = function(cb) {
-	if (typeof this.callback == "function")
-	{
-		this.callback = cb;
-	}
-};
-
 module.exports = API;
