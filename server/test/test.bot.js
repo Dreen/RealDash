@@ -3,7 +3,7 @@ assert	= require('assert'),
 mongo 	= require('mongodb'),
 Bot	= require('../bot.js');
 
-var bot, ref, mdb;
+var ref, mdb;
 
 before(function(done)
 {
@@ -17,11 +17,6 @@ before(function(done)
 				"method": "getSimple",
 				"args": [ ],
 				"timer": 30
-			}, {
-				"sig": "TestAPI.postParam(bar)",
-				"method": "postParam",
-				"args": [ "bar" ],
-				"timer": 20
 			}
 		]
 	};
@@ -78,6 +73,7 @@ describe('Bot Event', function()
 
 	it('should detect a call made to TestAPI', function(done)
 	{
+		var bot = new Bot(mdb);
 		bot.on('called', function(sig)
 		{
 			assert.equal(sig, "testapi.getSimple()");
@@ -87,6 +83,7 @@ describe('Bot Event', function()
 
 	it('should detect a call return from TestAPI', function(done)
 	{
+		var bot = new Bot(mdb);
 		bot.on('resulted', function(sig, result)
 		{
 			assert.equal(sig, "testapi.getSimple()");
