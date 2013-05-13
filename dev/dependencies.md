@@ -2,3 +2,4 @@
  - socket.io
  - mocha
  - mongodb
+ - winston
