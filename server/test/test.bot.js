@@ -41,13 +41,13 @@ before(function(done)
 	});
 });
 
-describe('Bot', function()
+describe('Bot Event', function()
 {
 	it('requestModel should contain the model of TestAPI', function(done)
 	{
 
 		var bot = new Bot(mdb);
-		bot.on('modelIsLoaded', function()
+		bot.on('loaded_model', function()
 		{
 			assert.deepEqual(bot.requestModel['TestAPI'], ref);
 			done();
@@ -55,30 +55,43 @@ describe('Bot', function()
 		
 	});
 
-	it('apis should contain an initialised API object', function()
+	it('apis should contain an included API module', function(done)
 	{
-		assert(bot.apis['TestAPI'] instanceof require('../api/testapi.js').TestAPI);
+		var bot = new Bot(mdb);
+		bot.on('loaded_objects', function()
+		{
+			assert.deepEqual(bot.apis['TestAPI'], require('../api/testapi.js'));
+			done();
+		});
 	});
 
-	describe('Events', function()
+	it('shutting down, should detect an event', function(done)
 	{
-		it('should detect a call made to TestAPI', function(done)
+		var bot = new Bot(mdb);
+		bot.on('shutdown_complete', function(sig)
 		{
-			bot.on('called', function(sig)
-			{
-				assert.equal(sig, "testapi.getSimple()");
-				done();
-			});
+			assert.ok(true);
+			done();
 		});
+		bot.shutdown();
+	});
 
-		it('should detect a call return from TestAPI', function(done)
+	it('should detect a call made to TestAPI', function(done)
+	{
+		bot.on('called', function(sig)
 		{
-			bot.on('resulted', function(sig, result)
-			{
-				assert.equal(sig, "testapi.getSimple()");
-				assert.deepEqual(result, {"result": "OK"});
-				done();
-			});
+			assert.equal(sig, "testapi.getSimple()");
+			done();
+		});
+	});
+
+	it('should detect a call return from TestAPI', function(done)
+	{
+		bot.on('resulted', function(sig, result)
+		{
+			assert.equal(sig, "testapi.getSimple()");
+			assert.deepEqual(result, {"result": "OK"});
+			done();
 		});
 	});
 });
