@@ -9,17 +9,17 @@ if (!module.parent)
 	//var port = process.argv[2] || 8000;
 	
 	// connect to mongo
-	mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db)
+	mongo.MongoClient.connect("mongodb://localhost:27017/bitapi", function(err, db)
 	{
 		if (err) throw err;
 
 		// read the server model from a file and update it in the db
 		var model = db.collection('model');
-		model.remove();
+		model.remove({w:0});
 		var serverModel = JSON.parse(fs.readFileSync(__dirname + '/serverModel.json').toString());
 		for (var i=0; i<serverModel.length; i++)
 		{
-			model.insert(serverModel[i], function(err, result) { if (err) throw err; });
+			model.insert(serverModel[i], {w:0});
 		}
 		
 		console.log("done");

@@ -3,52 +3,59 @@ assert	= require('assert'),
 mongo 	= require('mongodb'),
 Bot	= require('../bot.js');
 
-var mdb, bot;
+var bot, ref, mdb;
+
 before(function(done)
 {
-	mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db)
+	ref = {
+		"name": "TestAPI",
+		"file": "testapi.js",
+		"author": "greg.balaga@gmail.com",	
+		"calls": [
+			{
+				"sig": "TestAPI.getSimple()",
+				"method": "getSimple",
+				"args": [ ],
+				"timer": 30
+			}, {
+				"sig": "TestAPI.postParam(bar)",
+				"method": "postParam",
+				"args": [ "bar" ],
+				"timer": 20
+			}
+		]
+	};
+
+	mongo.MongoClient.connect("mongodb://localhost:27017/bitapi_test", function(err, db)
 	{
 		if (err) done(err);
 		else
 		{
 			mdb = db;
-			done();
+			var model = db.collection('model');
+			model.remove(function()
+			{
+				model.insert(ref, done);
+			});
 		}
 	});
 });
 
 describe('Bot', function()
 {
-	it('set up instance, verbosity should be true', function()
+	it('requestModel should contain the model of TestAPI', function(done)
 	{
-		bot = new Bot(mdb, true);
-		assert(bot.verboseRequests);
+
+		var bot = new Bot(mdb);
+		bot.on('modelIsLoaded', function()
+		{
+			assert.deepEqual(bot.requestModel['TestAPI'], ref);
+			done();
+		});
+		
 	});
 
-	it('serverModel should contain the model of TestAPI', function()
-	{
-		var ref = {
-			"name": "TestAPI",
-			"file": "testapi.js",
-			"author": "greg.balaga@gmail.com",	
-			"calls": [
-				{
-					"sig": "TestAPI.getSimple()",
-					"method": "getSimple",
-					"args": [ ],
-					"timer": 30
-				}, {
-					"sig": "TestAPI.postParam(bar)",
-					"method": "postParam",
-					"args": [ "bar" ],
-					"timer": 20
-				}
-			]
-		};
-		assert.deepEqual(bot.serverModel['TestAPI'], ref);
-	});
-
-	it('apis should contain an instance of TestAPI', function()
+	it('apis should contain an initialised API object', function()
 	{
 		assert(bot.apis['TestAPI'] instanceof require('../api/testapi.js').TestAPI);
 	});
