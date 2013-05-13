@@ -38,9 +38,8 @@ before(function(done)
 
 describe('Bot Event', function()
 {
-	it('requestModel should contain the model of TestAPI', function(done)
+	it('on loaded_model: requestModel should contain the model of TestAPI', function(done)
 	{
-
 		var bot = new Bot(mdb);
 		bot.on('loaded_model', function()
 		{
@@ -50,7 +49,7 @@ describe('Bot Event', function()
 		
 	});
 
-	it('apis should contain an included API module', function(done)
+	it('on loaded_objects: apis should contain an included API module', function(done)
 	{
 		var bot = new Bot(mdb);
 		bot.on('loaded_objects', function()
@@ -60,7 +59,7 @@ describe('Bot Event', function()
 		});
 	});
 
-	it('shutting down, should detect an event', function(done)
+	it('on shutdown_complete: shutting down, should detect an event', function(done)
 	{
 		var bot = new Bot(mdb);
 		bot.on('shutdown_complete', function(sig)
@@ -71,23 +70,38 @@ describe('Bot Event', function()
 		bot.shutdown();
 	});
 
-	it('should detect a call made to TestAPI', function(done)
+	it('on called: should get a Request object with a valid call spec', function(done)
 	{
 		var bot = new Bot(mdb);
-		bot.on('called', function(sig)
+		bot.on('called', function(request)
 		{
-			assert.equal(sig, "testapi.getSimple()");
+			assert.deepEqual(request.spec, ref);
 			done();
 		});
 	});
 
-	it('should detect a call return from TestAPI', function(done)
+	describe('on resulted: should get a Request object representing a *finished* TestAPI with:', function(done)
 	{
 		var bot = new Bot(mdb);
-		bot.on('resulted', function(sig, result)
+		bot.on('resulted', function(request)
 		{
-			assert.equal(sig, "testapi.getSimple()");
-			assert.deepEqual(result, {"result": "OK"});
+			it('valid call spec', function()
+			{
+				assert.deepEqual(request.spec, ref);
+			});
+			
+			it('valid result', function()
+			{
+				assert.deepEqual(request.result, {"result": "OK"});
+			});
+
+			it('run time greater than 0', function()
+			{
+				var ran = request.ran();
+				assert.equal(typeof ran, "number");
+				assert.ok(ran > 0);
+			});
+
 			done();
 		});
 	});
