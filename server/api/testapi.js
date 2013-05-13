@@ -6,17 +6,16 @@ API	= require('./api.js').API;
  * A simple API used for testing purposes.
  */
 
-function TestAPI()
+function TestAPI(onFinished)
 {
-	TestAPI.super_.apply(this, arguments);
-	this.host = 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com';
+	API.call(this, onFinished);
 }
 util.inherits(TestAPI, API);
 
 TestAPI.prototype.getSimple = function()
 {
 	this.go({
-		'host': this.host,
+		'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 		'path': '/~ec2-user/data/api.get.simple.json'
 	});
 };
@@ -24,7 +23,7 @@ TestAPI.prototype.getSimple = function()
 TestAPI.prototype.postParam = function(foobar)
 {
 	this.go({
-		'host': this.host,
+		'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 		'path': '/~ec2-user/data/api.post.param.php'
 	}, {
 		'foo': foobar
