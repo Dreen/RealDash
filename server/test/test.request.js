@@ -12,7 +12,7 @@ describe('Request', function()
 		"timer": 20
 	});
 
-	it('string representation', function()
+	it('toString() should return the call signature', function()
 	{
 		assert.equal(req.toString(), 'TestAPI.postParam(bar)');
 	});

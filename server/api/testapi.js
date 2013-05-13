@@ -1,6 +1,6 @@
 var
 util 	= require('util'),
-API	= require('./api.js').API;
+API	= require('./api.js');
 
 /*
  * A simple API used for testing purposes.
@@ -30,4 +30,4 @@ TestAPI.prototype.postParam = function(foobar)
 	});
 };
 
-module.exports.TestAPI = TestAPI;
+module.exports = TestAPI;
