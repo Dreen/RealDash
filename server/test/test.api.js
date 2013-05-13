@@ -7,11 +7,10 @@ function testSuite(APIOBJ, objname)
 	{
 		describe('normal instance', function()
 		{
-			var api = new APIOBJ();
-
-			it(' - verbosity level', function()
+			var result;
+			var api = new APIOBJ(function(data)
 			{
-				assert.strictEqual(api.verbose, false);
+				result = data;
 			});
 			
 			it(' - loading default credentials (empty object)', function()
@@ -21,33 +20,16 @@ function testSuite(APIOBJ, objname)
 
 			it(' - setting a simple callback', function()
 			{
-				var result;
-				api.setCallback(function(data)
-				{
-					result = data;
-				});
-				api.callback('OK');
+				api._onFinished('OK');
 				assert.equal(result, 'OK');
-			});
-		});
-
-		describe('verbose instance', function()
-		{
-			var api = new APIOBJ(true);
-			
-			it(' - verbosity level', function()
-			{
-				assert.strictEqual(api.verbose, true);
 			});
 		});
 
 		describe('GET retrieval', function()
 		{
-			var api = new APIOBJ();
-
 			it('simple', function(done)
 			{
-				api.setCallback(function(data)
+				var api = new APIOBJ(function(data)
 				{
 					assert.equal(data['result'], 'OK');
 					done();
@@ -61,12 +43,12 @@ function testSuite(APIOBJ, objname)
 
 			it('with a parameter', function(done)
 			{
-				api.setCallback(function(data)
+				var api = new APIOBJ(function(data)
 				{
 					assert.equal(data['result'], 'OK');
 					done();
 				});
-
+				
 				api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 					'path': '/~ec2-user/data/api.get.param.php'
@@ -78,16 +60,14 @@ function testSuite(APIOBJ, objname)
 
 		describe('POST retrieval', function()
 		{
-			var api = new APIOBJ();
-
 			it('simple', function(done)
 			{
-				api.setCallback(function(data)
+				var api = new APIOBJ(function(data)
 				{
 					assert.equal(data['result'], 'OK');
 					done();
 				});
-
+				
 				api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 					'path': '/~ec2-user/data/api.post.simple.php',
@@ -97,12 +77,12 @@ function testSuite(APIOBJ, objname)
 
 			it('with a parameter', function(done)
 			{
-				api.setCallback(function(data)
+				var api = new APIOBJ(function(data)
 				{
 					assert.equal(data['result'], 'OK');
 					done();
 				});
-
+				
 				api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 					'path': '/~ec2-user/data/api.post.param.php'
@@ -119,9 +99,9 @@ describe('parent', testSuite(API, "API"));
 
 // child
 var util = require('util');
-function TestAPI()
+function TestAPI(onFinished)
 {
-	TestAPI.super_.apply(this, arguments);
+	API.call(this, onFinished);
 }
 util.inherits(TestAPI, API);
 describe('child', testSuite(TestAPI, "TestAPI"));
