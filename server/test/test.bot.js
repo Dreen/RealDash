@@ -27,7 +27,7 @@ before(function(done)
 		else
 		{
 			mdb = db;
-			var model = db.collection('model');
+			var model = mdb.collection('model');
 			model.remove(function()
 			{
 				model.insert(ref, done);
@@ -80,29 +80,38 @@ describe('Bot Event', function()
 		});
 	});
 
-	describe('on resulted: should get a Request object representing a *finished* TestAPI with:', function(done)
+	describe('on resulted: should get a Request object with:', function()
 	{
-		var bot = new Bot(mdb);
-		bot.on('resulted', function(request)
+		it('valid call spec', function(done)
 		{
-			it('valid call spec', function()
+			var bot = new Bot(mdb);
+			bot.on('resulted', function(request)
 			{
 				assert.deepEqual(request.spec, ref);
+				done();
 			});
+		});
 			
-			it('valid result', function()
+		it('valid result', function(done)
+		{
+			var bot = new Bot(mdb);
+			bot.on('resulted', function(request)
 			{
 				assert.deepEqual(request.result, {"result": "OK"});
+				done();
 			});
+		});
 
-			it('run time greater than 0', function()
+		it('run time greater than 0', function(done)
+		{
+			var bot = new Bot(mdb);
+			bot.on('resulted', function(request)
 			{
 				var ran = request.ran();
 				assert.equal(typeof ran, "number");
 				assert.ok(ran > 0);
+				done();
 			});
-
-			done();
 		});
 	});
 });

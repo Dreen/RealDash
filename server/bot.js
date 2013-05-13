@@ -11,10 +11,10 @@ function Bot(db)
 	this.apis = {};
 	this.running = false;
 
+	var model = this.db.collection('model');
 	var mirror = this;
 
 	// load model
-	var model = db.collection('model');
 	model.find().toArray(function(err, data)
 	{
 		for(var i=0; i<data.length; i++)
@@ -43,6 +43,8 @@ function Bot(db)
 	{
 		while(true)
 		{
+
+
 			if (!mirror.running)
 			{
 				break;
