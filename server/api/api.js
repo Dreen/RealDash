@@ -26,7 +26,8 @@ function API (onFinished)
 }
 
 // launch an async request
-API.prototype.go = function(opts, post, get) {
+API.prototype.go = function(opts, post, get)
+{
 	// default variables
 	mirror	= this;
 	post	= post || {};

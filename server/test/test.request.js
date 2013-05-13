@@ -27,9 +27,10 @@ describe('Request', function()
 		req.run();
 	});
 
-	it('ran() should return an integer', function()
+	it('ran() should return an integer greater than 0', function()
 	{
 		var ran = req.ran();
 		assert.equal(typeof ran, "number");
+		assert.ok(ran > 0);
 	});
 });

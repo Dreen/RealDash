@@ -13,7 +13,7 @@ util.inherits(Request, EE);
 
 Request.prototype.toString = function()
 {
-	return this.callSpec.sig;
+	return this.callSpec['sig'];
 };
 
 Request.prototype.run = function()
@@ -21,11 +21,13 @@ Request.prototype.run = function()
 	var mirror = this;
 	this.tStart = new Date().getTime();
 
-	var callObj = new CallClass(function(result)
+	var callObj = new this.CallClass(function(result)
 	{
 		mirror.tFinish = new Date().getTime();
 		mirror.emit('finished', result);
 	});
+
+	callObj[this.callSpec['method']].apply(callObj, this.callSpec['args']);
 };
 
 Request.prototype.ran = function()
