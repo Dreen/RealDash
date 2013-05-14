@@ -7,6 +7,8 @@ function Request(CallClass, callSpec)
 	EE.call(this);
 	this.api = CallClass;
 	this.spec = callSpec;
+
+	// TODO: error handling and logging in this mondule
 }
 
 util.inherits(Request, EE);
