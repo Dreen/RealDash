@@ -1,13 +1,14 @@
 var
-_defs		= require('underscore').defaults,
-fs		= require('fs'),
-http 		= require('http'),
-https 		= require('https'),
-query		= require('querystring');
+_defs	= require('underscore').defaults,
+fs	= require('fs'),
+http 	= require('http'),
+https 	= require('https'),
+query	= require('querystring'),
+Winston = require('winston');
 
 var
 misc	= require('../misc.js'),
-logger	= require('../log.js');
+logger;
 
 // construct a new object for requests
 function API (onFinished)
@@ -96,4 +97,8 @@ API.prototype.go = function(opts, post, get)
 	req.end();
 };
 
-module.exports = API;
+module.exports = function(verbose)
+{
+	logger = new Winston.Logger({transports: (verbose) ? [new Winston.transports.Console()] : []});
+	return API;
+};
