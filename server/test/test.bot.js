@@ -1,7 +1,6 @@
 var
 assert	= require('assert'),
-mongo 	= require('mongodb'),
-Bot	= require('../bot.js')();
+mongo 	= require('mongodb');
 
 var ref, mdb, model, jobs_req;
 
@@ -41,6 +40,7 @@ describe('Bot Event', function()
 {
 	it('on loaded_model: requestModel should contain the model of TestAPI and a null for its call in #jobs', function(done)
 	{
+		var Bot	= require('../bot.js')();
 		var bot = new Bot(mdb);
 		bot.removeAllListeners(); // dont test further
 		bot.on('loaded_model', function()
@@ -55,6 +55,7 @@ describe('Bot Event', function()
 
 	it('on loaded_objects: apis should contain an included API module', function(done)
 	{
+		var Bot	= require('../bot.js')();
 		var bot = new Bot(mdb);
 		bot.removeAllListeners('loaded_objects'); // dont test further
 		bot.on('loaded_objects', function()
@@ -69,6 +70,7 @@ describe('Bot Event', function()
 	{
 		jobs_req.remove(function()
 		{
+			var Bot	= require('../bot.js')();
 			var bot = new Bot(mdb);
 			bot.on('shutdown_complete', function()
 			{
@@ -84,6 +86,7 @@ describe('Bot Event', function()
 	{
 		jobs_req.remove(function()
 		{
+			var Bot	= require('../bot.js')();
 			var bot = new Bot(mdb);
 			bot.on('called', function(request)
 			{
@@ -93,7 +96,6 @@ describe('Bot Event', function()
 			});
 				
 			bot.start();
-
 		});
 	});
 
@@ -103,6 +105,7 @@ describe('Bot Event', function()
 		{
 			jobs_req.remove(function()
 			{
+				var Bot = require('../bot.js')(true);
 				var bot = new Bot(mdb);
 				bot.on('resulted', function(request)
 				{
@@ -110,6 +113,8 @@ describe('Bot Event', function()
 					bot.shutdown();
 					done();
 				});
+				
+				bot.start();
 			});
 		});
 			
@@ -117,6 +122,7 @@ describe('Bot Event', function()
 		{
 			jobs_req.remove(function()
 			{
+				var Bot	= require('../bot.js')();
 				var bot = new Bot(mdb);
 				bot.on('resulted', function(request)
 				{
@@ -124,6 +130,8 @@ describe('Bot Event', function()
 					bot.shutdown();
 					done();
 				});
+				
+				bot.start();
 			});
 		});
 
@@ -131,6 +139,7 @@ describe('Bot Event', function()
 		{
 			jobs_req.remove(function()
 			{
+				var Bot	= require('../bot.js')();
 				var bot = new Bot(mdb);
 				bot.on('resulted', function(request)
 				{
@@ -140,6 +149,8 @@ describe('Bot Event', function()
 					bot.shutdown();
 					done();
 				});
+				
+				bot.start();
 			});
 		});
 	});

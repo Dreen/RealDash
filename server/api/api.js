@@ -4,7 +4,8 @@ fs	= require('fs'),
 http 	= require('http'),
 https 	= require('https'),
 query	= require('querystring'),
-Winston = require('winston');
+Winston = require('winston'),
+f 	= require('util').format;
 
 var
 misc	= require('../misc.js'),
@@ -74,24 +75,24 @@ API.prototype.go = function(opts, post, get)
 			buffer += data;
 		});
 		result.on('end', function() {
-			logger.info('<- Received %d bytes', buffer.length);
+			logger.info(f('<- Received %d bytes', buffer.length));
 			mirror._onFinished(JSON.parse(buffer));
 		});
 	});
 	
 	// error handling
 	req.on('error', function(e) {
-		logger.error('warning: problem with request: %s', e.message);
+		logger.error(f('warning: problem with request: %s', e.message));
 	});
 	
 	// write request body
 	if (misc.concrete(post))
 	{
 		req.write(query.stringify(post));
-		logger.info('POST data: %s', query.stringify(post));
+		logger.info(f('POST data: %s', query.stringify(post)));
 	}
 	
-	logger.info('-> %s %s:%d%s', opts['method'], opts['host'], opts['port'], opts['path']);
+	logger.info(f('-> %s %s:%d%s', opts['method'], opts['host'], opts['port'], opts['path']));
 
 	// finish the request
 	req.end();

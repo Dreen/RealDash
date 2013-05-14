@@ -21,10 +21,10 @@ Request.prototype.toString = function()
 	return this.spec['sig'];
 };
 
-Request.prototype.run = function(tStart)
+Request.prototype.run = function()
 {
 	var mirror = this;
-	this.tStart = tStart || new Date().getTime();
+	this.tStart = new Date().getTime();
 
 	var callObj = new this.api(function(result)
 	{

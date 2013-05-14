@@ -4,7 +4,7 @@ fs	= require('fs'),
 EE	= require('events').EventEmitter,
 Winston = require('winston'),
 
-Request	= require('./request.js')();
+Request	= require('./request.js')(true);
 
 var logger;
 
@@ -33,13 +33,13 @@ function Bot(db)
 			}
 		}
 		logger.info('API Objects: ' + data.length);
-		logger.info('Calls: ' + mirror.jobs.length);
+		logger.info('Calls: ' + Object.keys(mirror.jobs).length);
 		mirror.emit('loaded_model');
 	});
 
 
 	// load objects
-	mirror.on('loaded_model', function()
+	this.on('loaded_model', function()
 	{
 		for (apiName in mirror.requestModel)
 		{
@@ -55,7 +55,7 @@ function Bot(db)
 	
 
 	// main loop revisited
-	mirror.on('loaded_objects', function()
+	this.on('loaded_objects', function()
 	{
 		logger.info('Starting');
 		while (mirror.isRunning())
@@ -71,17 +71,18 @@ function Bot(db)
 					// if there are no finished jobs, or the last job finished less than the appropiate time before now
 					if (oldReq === null || (oldReq.finished === true && (new Date().getTime() - call['timer']*1000 > oldReq.tStart)))
 					{
+						mirror.jobs[call['sig']] = false;
 						logger.info('calling ' + call['sig']);
-						mirror.jobs[call['sig']] = new Request(mirror.apis[apiName], call);
 
-						var req = mirror.jobs[call['sig']];
+						var req = new Request(mirror.apis[apiName], call);
 						req.on('finished', function(result)
 						{
+							logger.info('finished ' + call['sig']);
 							mirror.emit('resulted', req);
 						});
 
-						var tStart = new Date().getTime();
-						req.run(tStart);
+						req.run();
+						mirror.jobs[call['sig']] = req;
 						mirror.emit('called', req);
 					}
 				}
