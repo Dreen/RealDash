@@ -44,6 +44,7 @@ describe('Bot Event', function()
 		bot.on('loaded_model', function()
 		{
 			assert.deepEqual(bot.requestModel['TestAPI'], ref);
+			bot.shutdown();
 			done();
 		});
 		
@@ -55,6 +56,7 @@ describe('Bot Event', function()
 		bot.on('loaded_objects', function()
 		{
 			assert.deepEqual(bot.apis['TestAPI'], require('../api/testapi.js'));
+			bot.shutdown();
 			done();
 		});
 	});
@@ -76,6 +78,7 @@ describe('Bot Event', function()
 		bot.on('called', function(request)
 		{
 			assert.deepEqual(request.spec, ref);
+			bot.shutdown();
 			done();
 		});
 	});
@@ -88,6 +91,7 @@ describe('Bot Event', function()
 			bot.on('resulted', function(request)
 			{
 				assert.deepEqual(request.spec, ref);
+				bot.shutdown();
 				done();
 			});
 		});
@@ -98,6 +102,7 @@ describe('Bot Event', function()
 			bot.on('resulted', function(request)
 			{
 				assert.deepEqual(request.result, {"result": "OK"});
+				bot.shutdown();
 				done();
 			});
 		});
@@ -110,6 +115,7 @@ describe('Bot Event', function()
 				var ran = request.ran();
 				assert.equal(typeof ran, "number");
 				assert.ok(ran > 0);
+				bot.shutdown();
 				done();
 			});
 		});
