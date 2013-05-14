@@ -1,6 +1,6 @@
 var
 assert	= require('assert'),
-Request = require('../request.js'),
+Request = require('../request.js')(),
 TestAPI = require('../api/testapi.js');
 
 describe('Request', function()
