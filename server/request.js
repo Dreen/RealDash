@@ -7,6 +7,8 @@ function Request(CallClass, callSpec)
 	EE.call(this);
 	this.api = CallClass;
 	this.spec = callSpec;
+	this.finished = false;
+	this.result = null;
 
 	// TODO: error handling and logging in this mondule
 }
@@ -26,6 +28,8 @@ Request.prototype.run = function(tStart)
 	var callObj = new this.api(function(result)
 	{
 		mirror.tFinish = new Date().getTime();
+		mirror.finished = true;
+		mirror.result = result;
 		mirror.emit('finished', result);
 	});
 

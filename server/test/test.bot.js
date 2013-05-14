@@ -39,13 +39,14 @@ before(function(done)
 
 describe('Bot Event', function()
 {
-	it('on loaded_model: requestModel should contain the model of TestAPI', function(done)
+	it('on loaded_model: requestModel should contain the model of TestAPI and a null for its call in #jobs', function(done)
 	{
 		var bot = new Bot(mdb);
 		bot.removeAllListeners(); // dont test further
 		bot.on('loaded_model', function()
 		{
 			assert.deepEqual(bot.requestModel['TestAPI'], ref);
+			assert.strictEqual(bot.jobs["TestAPI.getSimple()"], null);
 			bot.shutdown();
 			done();
 		});
@@ -74,10 +75,8 @@ describe('Bot Event', function()
 				assert.ok(true);
 				done();
 			});
-			setTimeout(function()
-			{
-				bot.shutdown();
-			}, 100);
+			bot.start();
+			bot.shutdown();
 		});
 	});
 
@@ -88,10 +87,13 @@ describe('Bot Event', function()
 			var bot = new Bot(mdb);
 			bot.on('called', function(request)
 			{
-				assert.deepEqual(request.spec, ref);
+				assert.deepEqual(request.spec, ref.calls[0]);
 				bot.shutdown();
 				done();
 			});
+				
+			bot.start();
+
 		});
 	});
 
@@ -104,7 +106,7 @@ describe('Bot Event', function()
 				var bot = new Bot(mdb);
 				bot.on('resulted', function(request)
 				{
-					assert.deepEqual(request.spec, ref);
+					assert.deepEqual(request.spec, ref.calls[0]);
 					bot.shutdown();
 					done();
 				});
