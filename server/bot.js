@@ -2,8 +2,11 @@ var
 util	= require('util'),
 fs	= require('fs'),
 EE	= require('events').EventEmitter,
+Winston = require('winston'),
 
-Request	= require('./request.js');
+Request	= require('./request.js')();
+
+var logger;
 
 function Bot(db)
 {
@@ -29,6 +32,8 @@ function Bot(db)
 				mirror.jobs[data[i]['calls'][q]['sig']] = null;
 			}
 		}
+		logger.info('API Objects: ' + data.length);
+		logger.info('Calls: ' + mirror.jobs.length);
 		mirror.emit('loaded_model');
 	});
 
@@ -36,7 +41,6 @@ function Bot(db)
 	// load objects
 	mirror.on('loaded_model', function()
 	{
-		console.log('loaded_model');
 		for (apiName in mirror.requestModel)
 		{
 			var modulePath = './api/' + mirror.requestModel[apiName]['file'];
@@ -53,6 +57,7 @@ function Bot(db)
 	// main loop revisited
 	mirror.on('loaded_objects', function()
 	{
+		logger.info('Starting');
 		while (mirror.isRunning())
 		{
 			for (apiName in mirror.requestModel)
@@ -66,44 +71,23 @@ function Bot(db)
 					// if there are no finished jobs, or the last job finished less than the appropiate time before now
 					if (oldReq === null || (oldReq.finished === true && (new Date().getTime() - call['timer']*1000 > oldReq.tStart)))
 					{
-						console.log(call['sig']);
+						logger.info('calling ' + call['sig']);
 						mirror.jobs[call['sig']] = new Request(mirror.apis[apiName], call);
 
 						var req = mirror.jobs[call['sig']];
-						//item_id = null;
 						req.on('finished', function(result)
 						{
-							//jobs_req.update({_id: item_id}, {$set: {
-							//	'finished' : true,
-							//	'end': req.tFinish,
-							//	'exectime': req.ran(),
-							//	'result': result
-							//}}, function()
-							//{
 							mirror.emit('resulted', req);
-							console.log(result);
-							//});
 						});
 
 						var tStart = new Date().getTime();
-						//jobs_req.insert({
-						//	'call' : call['sig'],
-						//	'finished' : false,
-						//	'start': tStart,
-						//	'end': -1,
-						//	'exectime': 0,
-						//	'result': null
-						//}, function(err, item)
-						//{
-							
-							//item_id = item._id;
-							req.run(tStart);
-							mirror.emit('called', req);
-						//});
+						req.run(tStart);
+						mirror.emit('called', req);
 					}
 				}
 			}
 		}
+		logger.info('Shutting down');
 		mirror.emit('shutdown_complete');
 	});
 
@@ -205,4 +189,8 @@ Bot.prototype.isRunning = function()
 	return this.running;
 };
 
-module.exports = Bot;
+module.exports = function(verbose)
+{
+	logger = new Winston.Logger({transports: (verbose) ? [new Winston.transports.Console()] : []});
+	return Bot;
+};

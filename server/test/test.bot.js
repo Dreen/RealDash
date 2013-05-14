@@ -1,7 +1,7 @@
 var
 assert	= require('assert'),
 mongo 	= require('mongodb'),
-Bot	= require('../bot.js');
+Bot	= require('../bot.js')();
 
 var ref, mdb, model, jobs_req;
 
