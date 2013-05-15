@@ -4,7 +4,7 @@ fs	= require('fs'),
 EE	= require('events').EventEmitter,
 Winston = require('winston'),
 
-Request	= require('./request.js')(true);
+Request	= require('./request.js')();
 
 var logger;
 
@@ -52,45 +52,47 @@ function Bot(db)
 		mirror.emit('loaded_objects');
 	});
 
-	
-
-	// main loop revisited
-	this.on('loaded_objects', function()
+	// main loop
+	this.on('tick', function()
 	{
-		logger.info('Starting');
-		while (mirror.isRunning())
+		for (apiName in mirror.requestModel)
 		{
-			for (apiName in mirror.requestModel)
+			// loop through calls and make new requests for the ones that dont have active jobs AND should be called accoring to their timers
+			for (var i=0; i<mirror.requestModel[apiName].calls.length; i++)
 			{
-				// loop through calls and make new requests for the ones that dont have active jobs AND should be called accoring to their timers
-				for (var i=0; i<mirror.requestModel[apiName].calls.length; i++)
+				var call = mirror.requestModel[apiName].calls[i];
+				var oldReq = mirror.jobs[call['sig']];
+
+				// if there are no finished jobs, or the last job finished less than the appropiate time before now
+				if (oldReq === null || (oldReq.finished === true && (new Date().getTime() - call['timer']*1000 > oldReq.tStart)))
 				{
-					var call = mirror.requestModel[apiName].calls[i];
-					var oldReq = mirror.jobs[call['sig']];
+					mirror.jobs[call['sig']] = false;
+					logger.info('calling ' + call['sig']);
 
-					// if there are no finished jobs, or the last job finished less than the appropiate time before now
-					if (oldReq === null || (oldReq.finished === true && (new Date().getTime() - call['timer']*1000 > oldReq.tStart)))
+					var req = new Request(mirror.apis[apiName], call);
+					req.on('finished', function(result)
 					{
-						mirror.jobs[call['sig']] = false;
-						logger.info('calling ' + call['sig']);
+						logger.info('finished ' + call['sig'] + ' in ' + req.ran());
+						mirror.emit('resulted', req);
+					});
 
-						var req = new Request(mirror.apis[apiName], call);
-						req.on('finished', function(result)
-						{
-							logger.info('finished ' + call['sig'] + ' in ' + req.ran());
-							mirror.emit('resulted', req);
-						});
-
-						req.run();
-						mirror.jobs[call['sig']] = req;
-						mirror.emit('called', req);
-					}
+					req.run();
+					mirror.jobs[call['sig']] = req;
+					mirror.emit('called', req);
 				}
 			}
-			mirror.running = false;
 		}
-		logger.info('Shutting down');
-		mirror.emit('shutdown_complete');
+
+		if (mirror.isRunning())
+		{
+			setTimeout(function(){
+				mirror.emit('tick');
+			}, 100);
+		}
+		else
+		{
+			mirror.emit('shutdown_complete');
+		}
 	});
 
 	// main loop
@@ -164,25 +166,21 @@ function Bot(db)
 			mirror.emit('shutdown_complete');
 		}
 	};
-
-	//// start main loop
-	//mirror.on('loaded_objects', function()
-	//{
-	//	mirror.running = true;
-	//	tick();
-	//});
 }
 
 util.inherits(Bot, EE);
 
 Bot.prototype.shutdown = function()
 {
+	logger.info('shutting down');
 	this.running = false;
 };
 
 Bot.prototype.start = function()
 {
+	logger.info('starting');
 	this.running = true;
+	this.emit('tick');
 };
 
 Bot.prototype.isRunning = function()

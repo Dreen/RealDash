@@ -1,6 +1,6 @@
 var
 util 	= require('util'),
-API	= require('./api.js')(true);
+API	= require('./api.js')();
 
 /*
  * A simple API used for testing purposes.
