@@ -104,7 +104,6 @@ function Bot(db)
 				var call = mirror.requestModel[apiName].calls[i];
 				jobs_req.find({'sig': call['sig'], 'finished': false}).toArray(function(err, docs)
 				{
-					// TODO error handling and logging in this module
 					// if there are no unfinished (active) jobs for this call
 					if (docs.length == 0)
 					{
