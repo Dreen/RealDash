@@ -77,7 +77,7 @@ function Bot(db)
 						var req = new Request(mirror.apis[apiName], call);
 						req.on('finished', function(result)
 						{
-							logger.info('finished ' + call['sig']);
+							logger.info('finished ' + call['sig'] + ' in ' + req.ran());
 							mirror.emit('resulted', req);
 						});
 
@@ -87,6 +87,7 @@ function Bot(db)
 					}
 				}
 			}
+			mirror.running = false;
 		}
 		logger.info('Shutting down');
 		mirror.emit('shutdown_complete');

@@ -91,7 +91,7 @@ describe('Bot Event', function()
 			bot.on('called', function(request)
 			{
 				assert.deepEqual(request.spec, ref.calls[0]);
-				bot.shutdown();
+				//bot.shutdown();
 				done();
 			});
 				
