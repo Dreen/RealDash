@@ -3,6 +3,7 @@ util	= require('util'),
 fs	= require('fs'),
 EE	= require('events').EventEmitter,
 Winston = require('winston'),
+MDBOID	= require('mongodb').ObjectID,
 
 Request	= require('./request.js')();
 
@@ -52,6 +53,9 @@ function Bot(db)
 		mirror.emit('loaded_objects');
 	});
 
+	// remove unfinished entries in the db // TODO
+	this.on('loaded_objects', function(){});
+
 	// main loop
 	this.on('tick', function()
 	{
@@ -69,16 +73,41 @@ function Bot(db)
 					mirror.jobs[call['sig']] = false;
 					logger.info('calling ' + call['sig']);
 
-					var req = new Request(mirror.apis[apiName], call);
-					req.on('finished', function(result)
-					{
-						logger.info('finished ' + call['sig'] + ' in ' + req.ran());
-						mirror.emit('resulted', req);
-					});
+					var
+					req	= new Request(mirror.apis[apiName], call),
+					tStart	= new Date().getTime();
 
-					req.run();
-					mirror.jobs[call['sig']] = req;
-					mirror.emit('called', req);
+					jobs_req.insert({
+						'call': call['sig'],
+						'finished': false,
+						'start': tStart,
+						'end': -1,
+						'exectime': 0,
+						'result': null
+					}, function(err, item)
+					{
+						mirror.jobs[call['sig']] = req;
+
+						req.on('finished', function(result)
+						{
+							jobs_req.update({
+								'call': call['sig'],
+								'start': tStart
+							}, {$set: {
+								'finished' : true,
+								'end': req.tFinish,
+								'exectime': req.ran(),
+								'result': result
+							}}, function()
+							{
+								logger.info('finished ' + call['sig'] + ' in ' + req.ran());
+								mirror.emit('resulted', req);
+							});
+						});
+
+						req.run(tStart);
+						mirror.emit('called', req);
+					});
 				}
 			}
 		}
@@ -94,78 +123,6 @@ function Bot(db)
 			mirror.emit('shutdown_complete');
 		}
 	});
-
-	// main loop
-	var tick = function()
-	{
-		for (apiName in mirror.requestModel)
-		{
-			// loop through calls and make new requests for the ones that dont have active jobs AND should be called accoring to their timers
-			for (var i=0; i<mirror.requestModel[apiName].calls.length; i++)
-			{
-				var call = mirror.requestModel[apiName].calls[i];
-				jobs_req.find({'sig': call['sig'], 'finished': false}).toArray(function(err, docs)
-				{
-					// if there are no unfinished (active) jobs for this call
-					if (docs.length == 0)
-					{
-						// get the last finished job
-						jobs_req.find({'sig': call['sig'], 'finished': true}).sort('end', 'desc').limit(1).toArray(function(err, last)
-						{
-							// if there are no finished job either, or the last job finished less than the appropiate time before now
-							if (last.length == 0 || (new Date().getTime() - call['timer']*1000 > last[0]['start']))
-							{
-								// start a new job
-								mirror.activeJobs.push(call['sig']);
-								//var req = new Request(mirror.apis[apiName], call),
-								//item_id = null;
-								//req.on('finished', function(result)
-								//{
-								//	mirror.result = result;
-								//	jobs_req.update({_id: item_id}, {$set: {
-								//		'finished' : true,
-								//		'end': req.tFinish,
-								//		'exectime': req.ran(),
-								//		'result': result
-								//	}}, function()
-								//	{
-								//		mirror.emit('resulted', req);
-								//	});
-								//});
-
-								//var tStart = new Date().getTime();
-								//jobs_req.insert({
-								//	'call' : call['sig'],
-								//	'finished' : false,
-								//	'start': tStart,
-								//	'end': -1,
-								//	'exectime': 0,
-								//	'result': null
-								//}, function(err, item)
-								//{
-								//	console.log(item);
-								//	item_id = item._id;
-								//	req.run(tStart);
-								//	mirror.emit('called', req);
-								//});
-							}
-						});
-					}
-				});
-			}
-		}
-
-		//console.log(mirror.running);
-
-		if (mirror.running)
-		{
-			//tick();
-		}
-		else
-		{
-			mirror.emit('shutdown_complete');
-		}
-	};
 }
 
 util.inherits(Bot, EE);
