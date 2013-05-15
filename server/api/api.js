@@ -79,15 +79,6 @@ API.prototype.go = function(opts, post, get)
 			mirror._onFinished(JSON.parse(buffer));
 		});
 	});
-
-	// timeout handling
-	req.on('socket', function (socket)
-	{
-		//logger.info(f('# Bound to %s:%s', socket.address().address, socket.address().port));
-		logger.info('aaa');
-		//socket.setTimeout(5000);  
-		//socket.on('timeout', req.abort);
-	});
 	
 	// error handling
 	req.on('error', function(e) {
