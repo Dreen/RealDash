@@ -3,3 +3,4 @@
  - mocha
  - mongodb
  - winston
+ - shutdown-handler

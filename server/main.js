@@ -1,11 +1,17 @@
 //var io = require('socket.io');
-var mongo 	= require('mongodb'),
-fs		= require('fs');
-//var misc	= require('./misc.js');
+var
+mongo	= require('mongodb'),
+Winston = require('winston'),
+fs	= require('fs'),
+
+Bot	= require('./bot.js')(),
+
+logger	= new Winston.Logger({transports: [new Winston.transports.Console()]});
 
 // run as main module only
 if (!module.parent)
 {
+	logger.info('Initiating');
 	//var port = process.argv[2] || 8000;
 	
 	// connect to mongo
@@ -14,32 +20,24 @@ if (!module.parent)
 		if (err) throw err;
 
 		// read the server model from a file and update it in the db
-		var model = db.collection('model');
-		model.remove({w:0});
-		var serverModel = JSON.parse(fs.readFileSync(__dirname + '/serverModel.json').toString());
-		for (var i=0; i<serverModel.length; i++)
-		{
-			model.insert(serverModel[i], {w:0});
-		}
+		//var model = db.collection('model');
+		//model.remove({w:0});
+		//var serverModel = JSON.parse(fs.readFileSync(__dirname + '/serverModel.json').toString());
+		//for (var i=0; i<serverModel.length; i++)
+		//{
+		//	model.insert(serverModel[i], {w:0});
+		//}
 		
-		console.log("done");
-		
-		// TODO start the request bot
-		
-		// TODO logging
-		
-		// cPool?
+		// start the request bot
+		//var bot = new Bot(db);
+		//bot.start();
 		
 		// shutdown handler
-		//var shutdown = function()
-		//{
-		//	onsole.log('Server shutting down');
-		//	process.exit();
-		//}
-		//process.on('SIGTERM', shutdown);
-		//process.on('SIGQUIT', shutdown);
-		//process.on('SIGINT', shutdown);
-		//
+		require('shutdown-handler').on('exit', function() {
+			logger.info('Server shutting down');
+		});
+
+		// TODO server
 		//// start the server
 		//console.log('Serving at port %d', port);
 		//var server = io.listen(port);
