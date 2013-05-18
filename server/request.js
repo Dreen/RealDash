@@ -1,5 +1,6 @@
 var
 util	= require('util'),
+f 	= util.format,
 EE	= require('events').EventEmitter,
 Winston = require('winston');
 
@@ -31,11 +32,11 @@ Request.prototype.run = function(tStart)
 		mirror.tFinish = new Date().getTime();
 		mirror.finished = true;
 		mirror.result = result;
-		logger.info('<- ' + mirror.toString());
+		logger.info(f('%s: Finished', mirror.toString()));
 		mirror.emit('finished', result);
 	});
 
-	logger.info('-> ' + this.toString());
+	logger.info(f('%s: Called', this.toString()));
 
 	callObj[this.spec['method']].apply(callObj, this.spec['args']);
 };

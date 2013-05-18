@@ -1,5 +1,6 @@
 var
 util	= require('util'),
+f 	= util.format,
 fs	= require('fs'),
 EE	= require('events').EventEmitter,
 Winston = require('winston'),
@@ -33,8 +34,8 @@ function Bot(db)
 				mirror.jobs[data[i]['calls'][q]['sig']] = null;
 			}
 		}
-		logger.info('API Objects: ' + data.length);
-		logger.info('Calls: ' + Object.keys(mirror.jobs).length);
+		logger.info(f('Bot: API Objects: %d', data.length));
+		logger.info(f('Bot: Calls: %d', Object.keys(mirror.jobs).length));
 		mirror.emit('loaded_model');
 	});
 
@@ -71,7 +72,7 @@ function Bot(db)
 				if (oldReq === null || (oldReq.finished === true && (new Date().getTime() - call['timer']*1000 > oldReq.tStart)))
 				{
 					mirror.jobs[call['sig']] = false;
-					logger.info('calling ' + call['sig']);
+					logger.info(f('Bot: Calling %s', call['sig']));
 
 					var
 					req	= new Request(mirror.apis[apiName], call),
@@ -100,7 +101,7 @@ function Bot(db)
 								'result': result
 							}}, function()
 							{
-								logger.info('finished ' + call['sig'] + ' in ' + req.ran());
+								logger.info(f('Bot: Finished %s in %dms', call['sig'], req.ran()));
 								mirror.emit('resulted', req);
 							});
 						});

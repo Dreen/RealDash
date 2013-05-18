@@ -25,7 +25,7 @@ function API (onFinished)
 	}
 	
 	// default callback
-	this._onFinished = onFinished || function (data) { logger.info('%j', data); };
+	this._onFinished = onFinished || function (data) { logger.log('%j', data); };
 }
 
 // launch an async request
@@ -75,24 +75,24 @@ API.prototype.go = function(opts, post, get)
 			buffer += data;
 		});
 		result.on('end', function() {
-			logger.info(f('<- Received %d bytes', buffer.length));
+			logger.info(f('API: <- Received %d bytes', buffer.length));
 			mirror._onFinished(JSON.parse(buffer));
 		});
 	});
 	
 	// error handling
 	req.on('error', function(e) {
-		logger.error(f('warning: problem with request: %s', e.message));
+		logger.error(f('API: Problem with request: %s', e.message));
 	});
 	
 	// write request body
 	if (misc.concrete(post))
 	{
 		req.write(query.stringify(post));
-		logger.info(f('POST data: %s', query.stringify(post)));
+		logger.info(f('API: POST data: %s', query.stringify(post)));
 	}
 	
-	logger.info(f('-> %s %s:%d%s', opts['method'], opts['host'], opts['port'], opts['path']));
+	logger.info(f('API: -> %s %s:%d%s', opts['method'], opts['host'], opts['port'], opts['path']));
 
 	// finish the request
 	req.end();
