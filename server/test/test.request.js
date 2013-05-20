@@ -5,7 +5,7 @@ TestAPI = require('../api/testapi.js');
 
 describe('Request', function()
 {
-	var req = new Request(TestAPI, {
+	var req = new Request(new TestAPI(), {
 		"sig": "TestAPI.postParam(bar)",
 		"method": "postParam",
 		"args": [ "bar" ],

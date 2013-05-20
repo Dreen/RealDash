@@ -6,10 +6,10 @@ Winston = require('winston');
 
 var logger;
 
-function Request(CallClass, callSpec)
+function Request(CallObj, callSpec)
 {
 	EE.call(this);
-	this.api = CallClass;
+	this.callObj = CallObj;
 	this.spec = callSpec;
 	this.finished = false;
 	this.result = null;
@@ -24,10 +24,14 @@ Request.prototype.toString = function()
 
 Request.prototype.run = function(tStart)
 {
-	var mirror = this;
 	this.tStart = tStart || new Date().getTime();
 
-	var callObj = new this.api(function(result)
+	// get the worker
+	var worker = this.callObj[this.spec['method']].apply(this.callObj, this.spec['args']);
+
+	// run worker
+	var mirror = this;
+	worker(function(result)
 	{
 		mirror.tFinish = new Date().getTime();
 		mirror.finished = true;
@@ -37,8 +41,6 @@ Request.prototype.run = function(tStart)
 	});
 
 	logger.info(f('%s: Called', this.toString()));
-
-	callObj[this.spec['method']].apply(callObj, this.spec['args']);
 };
 
 Request.prototype.ran = function()
