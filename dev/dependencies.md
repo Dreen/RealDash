@@ -4,3 +4,4 @@
  - mongodb
  - winston
  - shutdown-handler
+ - async
