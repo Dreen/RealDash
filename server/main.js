@@ -1,5 +1,6 @@
 var
 mongo	= require('mongodb'),
+async	= require('async'),
 io	= require('socket.io'),
 Winston = require('winston'),
 quitter	= require('shutdown-handler'),
@@ -15,7 +16,7 @@ err_handler = function(){}; //TODO
 // run as main module only
 if (!module.parent)
 {
-	logger.info('Main: Initiating');
+	logger.info('Main: Init');
 	var port = process.argv[2] || 8000;
 	
 	// connect to mongo
@@ -29,25 +30,32 @@ if (!module.parent)
 		model.remove(function()
 		{
 			var serverModel = JSON.parse(fs.readFileSync(__dirname + '/serverModel.json').toString());
-			for (var i=0; i<serverModel.length; i++)
+			async.each(serverModel, function(item, done)
 			{
-				model.insert(serverModel[i], (i < serverModel.length - 1) ? err_handler : function()
+				model.insert(item, done);
+			},
+			function()
+			{
+				// start the request bot
+				bot = new Bot(db);
+				bot.on('loaded_objects', function()
 				{
-					// start the request bot
-					bot = new Bot(db);
 					bot.start();
+					logger.info('Main: Init complete');
 				});
-			}
+			});
 		});
 
 		// start the server
 		logger.info(f('Main: Serving at port %d', port));
+		// io.set('logger', null); // TODO diable socket.io outputs, do we have to upgrade to v1.0 ?
 		var server = io.listen(port);
 		
 		// server handler
 		server.sockets.on('connection' , function(socket)
 		{
-			logger.info(f('connected id:%s', socket.id);
+			logger.info(f('Main: Connected %s from %s', socket.id, socket.handshake.url));
+
 			socket.on('message', function(msg) // TODO optional arg callback useful?
 			{
 				socket.send(msg);
@@ -55,7 +63,7 @@ if (!module.parent)
 			
 			socket.on('disconnect', function()
 			{
-				console.log('disconnected id:%s', socket.id);
+				logger.info(f('Main: Disconnected %s', socket.id));
 			});
 		});
 		

@@ -105,7 +105,7 @@ function Bot(db)
 			{
 				var req	= new Request(apiObj, call);
 				mirror.jobs[call['sig']] = req;
-				
+
 				req.on('finished', function()
 				{
 					endJob(req);
@@ -155,7 +155,7 @@ util.inherits(Bot, EE);
 
 Bot.prototype.shutdown = function()
 {
-	logger.info('shutting down');
+	logger.info('Bot: Shutting down');
 	this.running = false;
 };
 
