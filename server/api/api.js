@@ -14,18 +14,10 @@ logger;
 // construct a new object for requests
 function API ()
 {
-	// load credentials  // TODO move this to model and we can get rid of the constructor, but it has to be available in go()
-	if (fs.existsSync(__dirname + '/cred/' + this.constructor.name + '.cred'))
-	{
-		this.cred = JSON.parse(fs.readFileSync(__dirname + '/cred/' + this.constructor.name + '.cred').toString());
-	}
-	else
-	{
-		this.cred = JSON.parse(fs.readFileSync(__dirname + '/cred/API.cred').toString());
-	}
+	this.cred = {};
 }
 
-// launch an async request
+// return a worker for the async request
 API.prototype.go = function(opts, post, get)
 {
 	var mirror = this;

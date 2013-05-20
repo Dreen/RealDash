@@ -1,10 +1,21 @@
 var
 assert	= require('assert'),
-Request = require('../request.js')(),
-TestAPI = require('../api/testapi.js');
+util	= require('util'),
+API	= require('../api/api.js')(),
+Request = require('../request.js')();
 
 describe('Request', function()
 {
+	var TestAPIMethods = require('../api/testapi.js');
+	function TestAPI()
+	{
+		API.call(this);
+	}
+	util.inherits(TestAPI, API);
+	for (callName in TestAPIMethods)
+	{
+		TestAPI.prototype[callName] = TestAPIMethods[callName];
+	}
 	var req = new Request(new TestAPI(), {
 		"sig": "TestAPI.postParam(bar)",
 		"method": "postParam",

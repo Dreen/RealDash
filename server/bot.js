@@ -7,6 +7,7 @@ async	= require('async'),
 Winston = require('winston'),
 MDBOID	= require('mongodb').ObjectID,
 
+API	= require('./api/api.js')(),
 Request	= require('./request.js')();
 
 var logger;
@@ -41,7 +42,7 @@ function Bot(db)
 	});
 
 
-	// load objects
+	// load api objects
 	this.on('loaded_model', function()
 	{
 		for (apiName in mirror.requestModel)
@@ -49,8 +50,19 @@ function Bot(db)
 			var modulePath = './api/' + mirror.requestModel[apiName]['file'];
 			if (fs.existsSync(modulePath))
 			{
-				var APIObj = require(modulePath);
-				mirror.apis[apiName] = new APIObj();	
+				var APIMethods = require(modulePath);
+				function APIClass()
+				{
+					API.call(this);
+				}
+				util.inherits(APIClass, API);
+				for (callName in APIMethods)
+				{
+					APIClass.prototype[callName] = APIMethods[callName];
+				}
+				var APIObj = new APIClass();
+				APIObj.cred = mirror.requestModel[apiName].cred;
+				mirror.apis[apiName] = APIObj;
 			}
 		}
 		mirror.emit('loaded_objects');

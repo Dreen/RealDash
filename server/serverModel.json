@@ -2,7 +2,10 @@
 	{
 		"name": "TestAPI",
 		"file": "testapi.js",
-		"author": "greg.balaga@gmail.com",	
+		"author": "greg.balaga@gmail.com",
+		"cred": {
+			"his identification": "you dont need to see it"
+		},
 		"calls": [
 			{
 				"sig": "TestAPI.getSimple()",

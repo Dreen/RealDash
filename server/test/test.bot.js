@@ -9,7 +9,10 @@ before(function(done)
 	ref = {
 		"name": "TestAPI",
 		"file": "testapi.js",
-		"author": "greg.balaga@gmail.com",	
+		"author": "greg.balaga@gmail.com",
+		"cred": {
+			"his identification": "you dont need to see it"
+		},
 		"calls": [
 			{
 				"sig": "TestAPI.getSimple()",
@@ -60,7 +63,7 @@ describe('Bot Event', function()
 		bot.removeAllListeners('loaded_objects'); // dont test further
 		bot.on('loaded_objects', function()
 		{
-			assert.deepEqual(bot.apis['TestAPI'].cred['name'], "TestAPI");
+			assert.equal(bot.apis['TestAPI'].cred['his identification'], "you dont need to see it");
 			bot.shutdown();
 			done();
 		});
