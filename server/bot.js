@@ -3,10 +3,11 @@ util	= require('util'),
 f 	= util.format,
 fs	= require('fs'),
 EE	= require('events').EventEmitter,
+async	= require('async'),
 Winston = require('winston'),
 MDBOID	= require('mongodb').ObjectID,
 
-Request	= require('./request.js')();
+Request	= require('./request.js')(true);
 
 var logger;
 
@@ -57,67 +58,77 @@ function Bot(db)
 	// remove unfinished entries in the db // TODO
 	this.on('loaded_objects', function(){});
 
+	function startJob(call)
+	{
+		mirror.jobs[call['sig']] = false;
+		logger.info(f('Bot: Calling %s', call['sig']));
+
+		var
+		req	= new Request(mirror.apis[apiName], call),
+		tStart	= new Date().getTime();
+
+		jobs_req.insert({
+			'call': call['sig'],
+			'finished': false,
+			'start': tStart,
+			'end': -1,
+			'exectime': 0,
+			'result': null
+		}, function(err, item)
+		{
+			if (err) throw err;
+
+			mirror.jobs[call['sig']] = req;
+
+			req.on('finished', function(result)
+			{
+				jobs_req.update({
+					'call': call['sig'],
+					'start': tStart
+				}, {$set: {
+					'finished' : true,
+					'end': req.tFinish,
+					'exectime': req.ran(),
+					'result': result
+				}}, function(err, result)
+				{
+					if (err) throw err;
+
+					logger.info(f('Bot: Finished %s in %dms', call['sig'], req.ran()));
+					mirror.emit('resulted', req);
+				});
+			});
+
+			req.run(tStart);
+			mirror.emit('called', req);
+		});
+	}
+
 	// main loop
 	this.on('tick', function()
 	{
 		for (apiName in mirror.requestModel)
 		{
 			// loop through calls and make new requests for the ones that dont have active jobs AND should be called accoring to their timers
-			for (var i=0; i<mirror.requestModel[apiName].calls.length; i++)
+			async.each(mirror.requestModel[apiName].calls, function(call, done)
 			{
-				var call = mirror.requestModel[apiName].calls[i];
 				var oldReq = mirror.jobs[call['sig']];
 
 				// if there are no finished jobs, or the last job finished less than the appropiate time before now
 				if (oldReq === null || (oldReq.finished === true && (new Date().getTime() - call['timer']*1000 > oldReq.tStart)))
 				{
-					mirror.jobs[call['sig']] = false;
-					logger.info(f('Bot: Calling %s', call['sig']));
-
-					var
-					req	= new Request(mirror.apis[apiName], call),
-					tStart	= new Date().getTime();
-
-					jobs_req.insert({
-						'call': call['sig'],
-						'finished': false,
-						'start': tStart,
-						'end': -1,
-						'exectime': 0,
-						'result': null
-					}, function(err, item)
-					{
-						mirror.jobs[call['sig']] = req;
-
-						req.on('finished', function(result)
-						{
-							jobs_req.update({
-								'call': call['sig'],
-								'start': tStart
-							}, {$set: {
-								'finished' : true,
-								'end': req.tFinish,
-								'exectime': req.ran(),
-								'result': result
-							}}, function()
-							{
-								logger.info(f('Bot: Finished %s in %dms', call['sig'], req.ran()));
-								mirror.emit('resulted', req);
-							});
-						});
-
-						req.run(tStart);
-						mirror.emit('called', req);
-					});
+					startJob(call);
 				}
-			}
+
+				done();
+			});
 		}
 
 		if (mirror.isRunning())
 		{
 			setTimeout(function(){
 				mirror.emit('tick');
-			}, 100);
+			}, 1000);
 		}
 		else
 		{

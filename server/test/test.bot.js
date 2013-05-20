@@ -139,7 +139,7 @@ describe('Bot Event', function()
 		{
 			jobs_req.remove(function()
 			{
-				var Bot	= require('../bot.js')(true);
+				var Bot	= require('../bot.js')();
 				var bot = new Bot(mdb);
 				bot.on('resulted', function(request)
 				{
