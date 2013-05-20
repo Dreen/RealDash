@@ -14,15 +14,15 @@ util.inherits(TestAPI, API);
 
 TestAPI.prototype.getSimple = function()
 {
-	this.go({
+	return this.go({
 		'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-		'path': '/~ec2-user/data/api.get.simple.json'
+		'path': '/~ec2-user/data/api.get.simple.php'
 	});
 };
 
 TestAPI.prototype.postParam = function(foobar)
 {
-	this.go({
+	return this.go({
 		'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 		'path': '/~ec2-user/data/api.post.param.php'
 	}, {

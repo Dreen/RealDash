@@ -6,55 +6,39 @@ function testSuite(APIOBJ, objname)
 {
 	return function()
 	{
-		describe('normal instance', function()
-		{
-			var result;
-			var api = new APIOBJ(function(data)
-			{
-				result = data;
-			});
-			
-			it(' - loading default credentials (empty object)', function()
-			{
-				assert.deepEqual(api.cred, {name: objname});
-			});
-
-			it(' - setting a simple callback', function()
-			{
-				api._onFinished('OK');
-				assert.equal(result, 'OK');
-			});
-		});
-
 		describe('GET retrieval', function()
 		{
 			it('simple', function(done)
 			{
-				var api = new APIOBJ(function(data)
+				var api = new APIOBJ();
+
+				var worker = api.go({
+					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
+					'path': '/~ec2-user/data/api.get.simple.php'
+				});
+
+				worker(function(data)
 				{
 					assert.equal(data['result'], 'OK');
 					done();
-				});
-
-				api.go({
-					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-					'path': '/~ec2-user/data/api.get.simple.json'
 				});
 			});
 
 			it('with a parameter', function(done)
 			{
-				var api = new APIOBJ(function(data)
-				{
-					assert.equal(data['result'], 'OK');
-					done();
-				});
+				var api = new APIOBJ();
 				
-				api.go({
+				var worker = api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 					'path': '/~ec2-user/data/api.get.param.php'
 				}, null, {
 					'foo': 'bar'
+				});
+
+				worker(function(data)
+				{
+					assert.equal(data['result'], 'OK');
+					done();
 				});
 			});
 		});
@@ -63,32 +47,36 @@ function testSuite(APIOBJ, objname)
 		{
 			it('simple', function(done)
 			{
-				var api = new APIOBJ(function(data)
-				{
-					assert.equal(data['result'], 'OK');
-					done();
-				});
+				var api = new APIOBJ();
 				
-				api.go({
+				var worker = api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 					'path': '/~ec2-user/data/api.post.simple.php',
 					'method': 'POST'
+				});
+
+				worker(function(data)
+				{
+					assert.equal(data['result'], 'OK');
+					done();
 				});
 			});
 
 			it('with a parameter', function(done)
 			{
-				var api = new APIOBJ(function(data)
-				{
-					assert.equal(data['result'], 'OK');
-					done();
-				});
+				var api = new APIOBJ();
 				
-				api.go({
+				var worker = api.go({
 					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
 					'path': '/~ec2-user/data/api.post.param.php'
 				}, {
 					'foo': 'bar'
+				});
+
+				worker(function(data)
+				{
+					assert.equal(data['result'], 'OK');
+					done();
 				});
 			});
 		});
@@ -100,9 +88,9 @@ describe('parent', testSuite(API, "API"));
 
 // child
 var util = require('util');
-function TestAPI(onFinished)
+function TestAPI()
 {
-	API.call(this, onFinished);
+	API.call(this);
 }
 util.inherits(TestAPI, API);
 describe('child', testSuite(TestAPI, "TestAPI"));
