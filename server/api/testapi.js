@@ -6,9 +6,9 @@ API	= require('./api.js')();
  * A simple API used for testing purposes.
  */
 
-function TestAPI(onFinished)
+function TestAPI()
 {
-	API.call(this, onFinished);
+	API.call(this);
 }
 util.inherits(TestAPI, API);
 

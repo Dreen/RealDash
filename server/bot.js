@@ -7,7 +7,7 @@ async	= require('async'),
 Winston = require('winston'),
 MDBOID	= require('mongodb').ObjectID,
 
-Request	= require('./request.js')(true);
+Request	= require('./request.js')();
 
 var logger;
 
@@ -49,7 +49,8 @@ function Bot(db)
 			var modulePath = './api/' + mirror.requestModel[apiName]['file'];
 			if (fs.existsSync(modulePath))
 			{
-				mirror.apis[apiName] = require(modulePath);	
+				var APIObj = require(modulePath);
+				mirror.apis[apiName] = new APIObj();	
 			}
 		}
 		mirror.emit('loaded_objects');
@@ -58,54 +59,67 @@ function Bot(db)
 	// remove unfinished entries in the db // TODO
 	this.on('loaded_objects', function(){});
 
-	function startJob(call)
+	function endJob(req)
 	{
-		mirror.jobs[call['sig']] = false;
-		logger.info(f('Bot: Calling %s', call['sig']));
-
-		var
-		req	= new Request(mirror.apis[apiName], call),
-		tStart	= new Date().getTime();
-
-		jobs_req.insert({
-			'call': call['sig'],
-			'finished': false,
-			'start': tStart,
-			'end': -1,
-			'exectime': 0,
-			'result': null
-		}, function(err, item)
-		{
-			if (err) throw err;
-
-			mirror.jobs[call['sig']] = req;
-
-			req.on('finished', function(result)
+		async.parallel([
+			function(done)
 			{
 				jobs_req.update({
-					'call': call['sig'],
-					'start': tStart
+					'call': req.toString(),
+					'start': req.tStart
 				}, {$set: {
 					'finished' : true,
 					'end': req.tFinish,
 					'exectime': req.ran(),
-					'result': result
-				}}, function(err, result)
+					'result': req.result
+				}}, done);
+			},
+			function(done)
+			{
+				logger.info(f('Bot: Finished %s in %dms', req.toString(), req.ran()));
+				mirror.emit('resulted', req);
+			}
+		]);
+	}
+
+	function startJob(apiObj, call)
+	{
+		mirror.jobs[call['sig']] = false;
+		logger.info(f('Bot: Calling %s', call['sig']));
+
+		var tStart = new Date().getTime();
+
+		async.parallel([
+			function(done)
+			{
+				jobs_req.insert({
+					'call': call['sig'],
+					'finished': false,
+					'start': tStart,
+					'end': -1,
+					'exectime': 0,
+					'result': null
+				}, done);
+			},
+			function(done)
+			{
+				var req	= new Request(apiObj, call);
+				mirror.jobs[call['sig']] = req;
+				
+				req.on('finished', function()
 				{
-					if (err) throw err;
-
-					logger.info(f('Bot: Finished %s in %dms', call['sig'], req.ran()));
-					mirror.emit('resulted', req);
+					endJob(req);
 				});
-			});
 
-			req.run(tStart);
-			mirror.emit('called', req);
-		});
+				req.run(tStart);
+				mirror.emit('called', req);
+				done();
+			}
+		]);
 	}
 
 	// main loop
-	this.on('tick', function()
+	this.on('tick', function(i)
 	{
 		for (apiName in mirror.requestModel)
 		{
@@ -117,7 +131,7 @@ function Bot(db)
 				// if there are no finished jobs, or the last job finished less than the appropiate time before now
 				if (oldReq === null || (oldReq.finished === true && (new Date().getTime() - call['timer']*1000 > oldReq.tStart)))
 				{
-					startJob(call);
+					startJob(mirror.apis[apiName], call);
 				}
 
 				done();
@@ -127,7 +141,7 @@ function Bot(db)
 		if (mirror.isRunning())
 		{
 			setTimeout(function(){
-				mirror.emit('tick');
+				mirror.emit('tick', ++i);
 			}, 1000);
 		}
 		else
@@ -149,7 +163,7 @@ Bot.prototype.start = function()
 {
 	logger.info('starting');
 	this.running = true;
-	this.emit('tick');
+	this.emit('tick', 1);
 };
 
 Bot.prototype.isRunning = function()

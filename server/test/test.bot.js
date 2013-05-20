@@ -53,14 +53,14 @@ describe('Bot Event', function()
 		
 	});
 
-	it('on loaded_objects: apis should contain an included API module', function(done)
+	it('on loaded_objects: apis should contain an included API module with initialised credentials', function(done)
 	{
 		var Bot	= require('../bot.js')();
 		var bot = new Bot(mdb);
 		bot.removeAllListeners('loaded_objects'); // dont test further
 		bot.on('loaded_objects', function()
 		{
-			assert.deepEqual(bot.apis['TestAPI'], require('../api/testapi.js'));
+			assert.deepEqual(bot.apis['TestAPI'].cred['name'], "TestAPI");
 			bot.shutdown();
 			done();
 		});
