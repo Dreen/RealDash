@@ -19,6 +19,7 @@ function Bot(db)
 	this.requestModel = {};
 	this.apis = {};
 	this.jobs = {};
+	this.running = false;
 
 	var
 	model = this.db.collection('model'),
@@ -150,7 +151,7 @@ function Bot(db)
 			});
 		}
 
-		if (mirror.isRunning())
+		if (mirror.running)
 		{
 			setTimeout(function(){
 				mirror.emit('tick', ++i);
@@ -173,14 +174,9 @@ Bot.prototype.shutdown = function()
 
 Bot.prototype.start = function()
 {
-	logger.info('starting');
+	logger.info('Bot: Starting');
 	this.running = true;
 	this.emit('tick', 1);
-};
-
-Bot.prototype.isRunning = function()
-{
-	return this.running;
 };
 
 module.exports = function(verbose)
