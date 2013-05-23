@@ -1,15 +1,16 @@
 var
-mongo	= require('mongodb'),
-async	= require('async'),
-io	= require('socket.io'),
-Winston = require('winston'),
-quitter	= require('shutdown-handler'),
-fs	= require('fs'),
-f 	= require('util').format,
-
-Bot	= require('./bot.js')(true),
-
-logger	= new Winston.Logger({transports: [new Winston.transports.Console()]}),
+mongo		= require('mongodb'),
+async		= require('async'),
+io		= require('socket.io'),
+Winston 	= require('winston'),
+quitter		= require('shutdown-handler'),
+fs		= require('fs'),
+f 		= require('util').format,
+	
+Bot		= require('./bot.js')(),
+Broadcast	= require('./broadcast.js')(true),
+	
+logger		= new Winston.Logger({transports: [new Winston.transports.Console()]}),
 
 err_handler = function(){}; //TODO
 
@@ -49,7 +50,9 @@ if (!module.parent)
 		// start the server
 		logger.info(f('Main: Serving at port %d', port));
 		// io.set('logger', null); // TODO diable socket.io outputs, do we have to upgrade to v1.0 ?
-		var server = io.listen(port);
+		var
+		server = io.listen(port),
+		users = require('./users.js');
 		
 		// server handler
 		server.sockets.on('connection' , function(socket)
@@ -66,6 +69,10 @@ if (!module.parent)
 				logger.info(f('Main: Disconnected %s', socket.id));
 			});
 		});
+		
+		// start the broadcast thread
+		var bcast = new Broadcast(db, users);
+		bcast.start();
 		
 		// shutdown handler
 		quitter.on('exit', function() {
