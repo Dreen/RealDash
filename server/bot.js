@@ -5,7 +5,6 @@ fs	= require('fs'),
 EE	= require('events').EventEmitter,
 async	= require('async'),
 Winston = require('winston'),
-MDBOID	= require('mongodb').ObjectID,
 
 API	= require('./api/api.js')(),
 Request	= require('./request.js')();
@@ -14,6 +13,9 @@ var logger;
 
 function Bot(db)
 {
+	/**
+	 * Class variables
+	 */
 	EE.call(this);
 	this.db = db;
 	this.requestModel = {};
@@ -21,57 +23,17 @@ function Bot(db)
 	this.jobs = {};
 	this.running = false;
 
+	/**
+	 * Local variables
+	 */
 	var
 	model = this.db.collection('model'),
 	jobs_req = this.db.collection('jobs_req'),
 	mirror = this;
 
-	// load model
-	model.find().toArray(function(err, data)
-	{
-		for(var i=0; i<data.length; i++)
-		{
-			mirror.requestModel[data[i].name] = data[i];
-			for (var q=0; q<data[i]['calls'].length; q++)
-			{
-				mirror.jobs[data[i]['calls'][q]['sig']] = null;
-			}
-		}
-		logger.info(f('Bot: API Objects: %d', data.length));
-		logger.info(f('Bot: Calls: %d', Object.keys(mirror.jobs).length));
-		mirror.emit('loaded_model');
-	});
-
-
-	// load api objects
-	this.on('loaded_model', function()
-	{
-		for (apiName in mirror.requestModel)
-		{
-			var modulePath = './api/' + mirror.requestModel[apiName]['file'];
-			if (fs.existsSync(modulePath))
-			{
-				var APIMethods = require(modulePath);
-				function APIClass()
-				{
-					API.call(this);
-				}
-				util.inherits(APIClass, API);
-				for (callName in APIMethods)
-				{
-					APIClass.prototype[callName] = APIMethods[callName];
-				}
-				var APIObj = new APIClass();
-				APIObj.cred = mirror.requestModel[apiName].cred;
-				mirror.apis[apiName] = APIObj;
-			}
-		}
-		mirror.emit('loaded_objects');
-	});
-
-	// remove unfinished entries in the db // TODO
-	this.on('loaded_objects', function(){});
-
+	/**
+	 * Local methods
+	 */
 	function endJob(req)
 	{
 		async.parallel([
@@ -131,6 +93,55 @@ function Bot(db)
 		]);
 	}
 
+	/**
+	 * Events
+	 */
+	// load model
+	model.find().toArray(function(err, data)
+	{
+		for(var i=0; i<data.length; i++)
+		{
+			mirror.requestModel[data[i].name] = data[i];
+			for (var q=0; q<data[i]['calls'].length; q++)
+			{
+				mirror.jobs[data[i]['calls'][q]['sig']] = null;
+			}
+		}
+		logger.info(f('Bot: API Objects: %d', data.length));
+		logger.info(f('Bot: Calls: %d', Object.keys(mirror.jobs).length));
+		mirror.emit('loaded_model');
+	});
+
+
+	// load api objects
+	this.on('loaded_model', function()
+	{
+		for (apiName in mirror.requestModel)
+		{
+			var modulePath = './api/' + mirror.requestModel[apiName]['file'];
+			if (fs.existsSync(modulePath))
+			{
+				var APIMethods = require(modulePath);
+				function APIClass()
+				{
+					API.call(this);
+				}
+				util.inherits(APIClass, API);
+				for (callName in APIMethods)
+				{
+					APIClass.prototype[callName] = APIMethods[callName];
+				}
+				var APIObj = new APIClass();
+				APIObj.cred = mirror.requestModel[apiName].cred;
+				mirror.apis[apiName] = APIObj;
+			}
+		}
+		mirror.emit('loaded_objects');
+	});
+
+	// cleanup, remove unfinished entries in the db // TODO
+	this.on('loaded_objects', function(){});
+
 	// main loop
 	this.on('tick', function(i)
 	{
@@ -166,6 +177,9 @@ function Bot(db)
 
 util.inherits(Bot, EE);
 
+/**
+ * Class methods
+ */
 Bot.prototype.shutdown = function()
 {
 	logger.info('Bot: Shutting down');
