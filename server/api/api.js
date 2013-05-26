@@ -26,6 +26,8 @@ API.prototype.go = function(opts, post, get)
 		// default variables
 		post	= post || {};
 		get	= get || {};
+		var hasPOST = misc.concrete(post);
+		var hasGET = misc.concrete(get);
 
 		// figure out if we want to use https
 		var prot = (opts.port == 443) ? https : http;
@@ -38,22 +40,22 @@ API.prototype.go = function(opts, post, get)
 			method:		'GET',
 			headers:	{}
 		});
-		
+
 		// switch to post if any post data is given
-		if (misc.concrete(post))
+		if (hasPOST)
 		{
 			opts.method = 'POST';
 		}
 		
 		// write get variables into the query string
-		if (misc.concrete(get))
+		if (hasGET)
 		{
 			opts.path += '?' + query.stringify(get);
 		}
 
 		// extra headers
 		opts.headers['User-Agent'] = opts.headers['User-Agent'] || "Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/10.0";
-		if (misc.concrete(post))
+		if (hasPOST)
 		{
 			opts.headers['Content-type'] = "application/x-www-form-urlencoded";
 		}
@@ -77,7 +79,7 @@ API.prototype.go = function(opts, post, get)
 		});
 		
 		// write request body
-		if (misc.concrete(post))
+		if (hasPOST)
 		{
 			req.write(query.stringify(post));
 			logger.info(f('API: POST data: %s', query.stringify(post)));
