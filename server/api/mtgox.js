@@ -1,3 +1,5 @@
+/*old
+
 var query	= require('querystring'),
 	hmac	= require('crypto').createHmac,
 	util	= require('util');
