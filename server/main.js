@@ -3,7 +3,7 @@ mongo		= require('mongodb'),
 async		= require('async'),
 io		= require('socket.io'),
 Winston 	= require('winston'),
-quitter		= require('shutdown-handler'),
+//quitter		= require('shutdown-handler'),
 fs		= require('fs'),
 f 		= require('util').format,
 	
@@ -58,15 +58,16 @@ if (!module.parent)
 		server.sockets.on('connection' , function(socket)
 		{
 			logger.info(f('Main: Connected %s from %s', socket.id, socket.handshake.url));
+			var user = users.add(socket);
 
 			socket.on('message', function(msg) // TODO optional arg callback useful?
 			{
-				socket.send(msg);
+				user.inbox(new Msg(msg));
 			});
 			
 			socket.on('disconnect', function()
 			{
-				logger.info(f('Main: Disconnected %s', socket.id));
+				user.emit('disconnected');
 			});
 		});
 		

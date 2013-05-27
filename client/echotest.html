@@ -1,8 +1,9 @@
 <html>
 <head>
-<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.10/socket.io.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.10/socket.io.min.js"></script>
 <script>
-  var socket = io.connect('http://ec2-54-245-170-7.us-west-2.compute.amazonaws.com:8000');
+  //var socket = io.connect('http://ec2-54-245-170-7.us-west-2.compute.amazonaws.com:8000');
+  var socket = io.connect('127.0.0.1:8000');
   socket.on('connect', function () {
     socket.on('message', function (msg) {
       console.log('-> ' + msg);

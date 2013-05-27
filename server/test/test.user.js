@@ -1,92 +1,38 @@
 var
 assert	= require('assert'),
-User	= require('./user.js')(true);
+User	= require('../user.js')(true),
+users	= require('../users.js');
 
-var Client = require('socket.io').Client;
+var mockSocket = {
+	id: "-dHkm7vtrjbWZewW6m_O",
+	handshake: { 
+		headers: {
+			'accept-language': 'en-GB,en;q=0.8,en-US;q=0.6',
+			origin: 'null',
+			'user-agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrom... (length: 108)',
+			host: '127.0.0.1:8000',
+			dnt: '1',
+			'accept-encoding': 'gzip,deflate,sdch',
+			'cache-control': 'max-age=0',
+			connection: 'keep-alive',
+			accept: '*/*'
+		},
+		address: { address: '127.0.0.1', port: 53042 },
+		url: '/socket.io/1/?t=1369690849393',
+		xdomain: true,
+		secure: undefined,
+		time: 'Mon May 27 2013 22:40:49 GMT+0100 (GMT Daylight Time)',
+		query: { t: '1369690849393' }
+	},
+	flags: { endpoint: '', room: '' }
+}
 
 describe('User', function()
 {
-	var user = new User({
+	var user = users.add(mockSocket);
 
-	});
-
-
-	mock the client?
-
-
-
-	describe('valid', function()
+	it('added to pool (lookup)', function()
 	{
-		var o = {
-			"cid": "ABC",
-			"cmd": "test"
-		};
-		var s = '{"cid":"ABC","cmd":"test"}';
-		
-		it('from json', function()
-		{
-			var msg = new Msg(o);
-			assert.ok(msg.isValid);
-			assert.deepEqual(msg.toJSON(), o);
-			assert.equal(msg.toString(), s);
-			assert.equal(msg.getCid(), "ABC");
-			assert.equal(msg.getCmd(), "test");
-			assert.deepEqual(msg.getArgs(), []);
-		});
-		
-		it('from string', function()
-		{
-			var msg = new Msg(s);
-			assert.ok(msg.isValid);
-			assert.deepEqual(msg.toJSON(), o);
-			assert.equal(msg.toString(), s);
-			assert.equal(msg.getCid(), "ABC");
-			assert.equal(msg.getCmd(), "test");
-			assert.deepEqual(msg.getArgs(), []);
-		});
-	});
-
-	describe('invalid', function()
-	{
-		var o = {
-			"cmd": "test"
-		};
-		var s = '{"cmd": "test"}';
-		
-		it('from json', function()
-		{
-			var msg = new Msg(o);
-			assert.ok(!msg.isValid);
-		});
-		
-		it('from string', function()
-		{
-			var msg = new Msg(s);
-			assert.ok(!msg.isValid);
-		});
-	});
-
-	describe('with arguments', function()
-	{
-		var o = {
-			"cid": "ABC",
-			"cmd": "test",
-			"args": [1, 2, 3]
-		};
-		var s = '{"cid":"ABC","cmd":"test","args":[1, 2, 3]}';
-
-		it('from json', function()
-		{
-			var msg = new Msg(o);
-			assert.ok(msg.isValid);
-			assert.equal(msg.getArgs(1), 2);
-		});
-		
-		it('from string', function()
-		{
-			var msg = new Msg(s);
-			assert.ok(msg.isValid);
-			assert.equal(msg.getArgs(2), 3);
-		});
-	});
+		assert.equal(users.get(mockSocket.id).id, mockSocket.id);
+	})
 });

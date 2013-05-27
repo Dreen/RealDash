@@ -1,5 +1,4 @@
 var
-io	= require('socket.io'),
 util	= require('util'),
 async	= require('async'),
 EE	= require('events').EventEmitter,
@@ -43,7 +42,7 @@ function Broadcast(db, users)
 	});
 }
 
-util.inherits(Bot, EE);
+util.inherits(Broadcast, EE);
 
 Broadcast.prototype.shutdown = function()
 {
