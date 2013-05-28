@@ -3,11 +3,13 @@ assert	= require('assert'),
 User	= require('../user.js')(true),
 users	= require('../users.js');
 
+var mockSocket = {
+	id: "-dHkm7vtrjbWZewW6m_O"
+};
+
 describe('User', function()
 {
-	var user = users.add({
-		id: "-dHkm7vtrjbWZewW6m_O"
-	});
+	var user = users.add(mockSocket);
 
 	it('loaded model', function()
 	{
