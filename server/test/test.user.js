@@ -5,7 +5,14 @@ users	= require('../users.js');
 
 describe('User', function()
 {
-	var user = users.add("-dHkm7vtrjbWZewW6m_O");
+	var user = users.add({
+		id: "-dHkm7vtrjbWZewW6m_O"
+	});
+
+	it('loaded model', function()
+	{
+		assert.ok(false);
+	});
 
 	it('added to pool (lookup)', function()
 	{
