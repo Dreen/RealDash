@@ -53,12 +53,11 @@ describe('Bot Event', function()
 			bot.shutdown();
 			done();
 		});
-		
 	});
 
 	it('on loaded_objects: apis should contain an included API module with initialised credentials', function(done)
 	{
-		var Bot	= require('../bot.js')(true);
+		var Bot	= require('../bot.js')();
 		var bot = new Bot(mdb);
 		bot.removeAllListeners('loaded_objects'); // dont test further
 		bot.on('loaded_objects', function()

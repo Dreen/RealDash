@@ -120,7 +120,7 @@ function Bot(db)
 	{
 		for (apiName in mirror._requestModel)
 		{
-			var modulePath = './api/' + mirror._requestModel[apiName]['file'];
+			var modulePath = './api/' + mirror._requestModel[apiName]['file']; // TODO this is relative to server/, should be made absolute with a global base path
 			if (fs.existsSync(modulePath))
 			{
 				var APIMethods = require(modulePath);
@@ -136,6 +136,7 @@ function Bot(db)
 				var APIObj = new APIClass();
 				APIObj.cred = mirror._requestModel[apiName].cred;
 				mirror._apis[apiName] = APIObj;
+				logger.info(f('Loaded module %s from %s', apiName, modulePath));
 			}
 		}
 		mirror.emit('loaded_objects');
@@ -175,6 +176,8 @@ function Bot(db)
 			mirror.emit('shutdown_complete');
 		}
 	});
+
+	startinit();
 }
 
 util.inherits(Bot, EE);

@@ -4,15 +4,18 @@ db schema/example
 model:
 
 	{
-		name : "MtGox",				// index
-		file : "mtgox.js",			// location: server/api/
-		author : "greg.balaga@gmail.com",	
-		calls : [
+		"name": "TestAPI",			// index
+		"file": "testapi.js",			// located in server/api/
+		"author": "greg.balaga@gmail.com",
+		"cred": {
+			"his identification": "you dont need to see it"
+		},
+		"calls": [
 			{
-				sig : "mtgox.currency(GBP, ticker)",
-				method: "currency",
-				args: [ "GBP", "depth" ],
-				timer : 30
+				"sig": "TestAPI.getSimple()",
+				"method": "getSimple",
+				"args": [ ],
+				"timer": 30
 			},
 			...
 		]
@@ -21,13 +24,13 @@ model:
 clients:
 
 	{
-		uid : "b38f7c448a08c452eb80",	// index, user ID
-		lastip : "83.26.251.209",	// last IP used by user
-		lastSeen : 1361657856,		// timestamp of last activitiy
-		clientModel : [			// client model saved by the user
+		uid : "-dHkm7vtrjbWZewW6m_O",	// index, user ID
+		lastip : "00.00.00.000",	// last IP used by user
+		lastSeen : 1369853601124,	// timestamp of last activitiy (ms)
+		model : [			// client model saved by the user
 			{
-				api : "MtGox",
-				call : "mtgox.currency(GBP, ticker)"
+				api : "TestAPI",
+				call : "TestAPI.getSimple()"
 			},
 			...
 		]
