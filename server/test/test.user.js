@@ -1,19 +1,57 @@
 var
 assert	= require('assert'),
 User	= require('../user.js')(true),
-users	= require('../users.js');
+users	= require('../users.js'),
+mongo 	= require('mongodb');
 
-var mockSocket = {
-	id: "-dHkm7vtrjbWZewW6m_O"
-};
+var clientModel, mockSocket, mdb, clients;
+
+before(function(done)
+{
+	clientModel = {
+		uid : "-dHkm7vtrjbWZewW6m_O",
+		lastip : "00.00.00.000",
+		lastSeen : 1369853601124,
+		model : [
+			{
+				api : "TestAPI",
+				call : "TestAPI.getSimple()"
+			}
+		]
+	};
+
+	mockSocket = {
+		id: "-dHkm7vtrjbWZewW6m_O"
+	};
+
+	mongo.MongoClient.connect("mongodb://localhost:27017/bitapi_test", function(err, db)
+	{
+		if (err) done(err);
+		else
+		{
+			mdb = db;
+			clients = mdb.collection('clients');
+			clients.remove(function()
+			{
+				clients.insert(clientModel, done);
+			});
+		}
+	});
+});
+
 
 describe('User', function()
 {
-	var user = users.add(mockSocket);
+	var user;
 
-	it('loaded model', function()
+	it('add to pool, on loaded_model: requestModel should contain a reference model call (clientModel.model[0])', function(done)
 	{
-		assert.ok(false);
+		user = users.add(mockSocket);
+		user.on('loaded_model', function()
+		{
+			assert.deepEqual(user._requestModel[0], clientModel.model[0]);
+			done();
+		});
 	});
 
 	it('added to pool (lookup)', function()
