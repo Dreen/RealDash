@@ -9,8 +9,8 @@ var logger;
 function Request(CallObj, callSpec)
 {
 	EE.call(this);
-	this.callObj = CallObj;
-	this.spec = callSpec;
+	this._callObj = CallObj;
+	this._spec = callSpec;
 	this.finished = false;
 	this.result = null;
 }
@@ -19,7 +19,7 @@ util.inherits(Request, EE);
 
 Request.prototype.toString = function()
 {
-	return this.spec['sig'];
+	return this._spec['sig'];
 };
 
 Request.prototype.run = function(tStart)
@@ -27,7 +27,7 @@ Request.prototype.run = function(tStart)
 	this.tStart = tStart || new Date().getTime();
 
 	// get the worker
-	var worker = this.callObj[this.spec['method']].apply(this.callObj, this.spec['args']);
+	var worker = this._callObj[this._spec['method']].apply(this._callObj, this._spec['args']);
 
 	// run worker
 	var mirror = this;

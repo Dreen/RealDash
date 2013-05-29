@@ -11,8 +11,8 @@ function User(socket)
 	/**
 	 * Class variables
 	 */
+	this._channel = socket;
 	this.id = socket.id;
-	this.channel = socket;
 
 	/**
 	 * Local variables

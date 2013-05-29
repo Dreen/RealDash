@@ -48,8 +48,8 @@ describe('Bot Event', function()
 		bot.removeAllListeners(); // dont test further
 		bot.on('loaded_model', function()
 		{
-			assert.deepEqual(bot.requestModel['TestAPI'], ref);
-			assert.strictEqual(bot.jobs["TestAPI.getSimple()"], null);
+			assert.deepEqual(bot._requestModel['TestAPI'], ref);
+			assert.strictEqual(bot._jobs["TestAPI.getSimple()"], null);
 			bot.shutdown();
 			done();
 		});
@@ -58,12 +58,12 @@ describe('Bot Event', function()
 
 	it('on loaded_objects: apis should contain an included API module with initialised credentials', function(done)
 	{
-		var Bot	= require('../bot.js')();
+		var Bot	= require('../bot.js')(true);
 		var bot = new Bot(mdb);
 		bot.removeAllListeners('loaded_objects'); // dont test further
 		bot.on('loaded_objects', function()
 		{
-			assert.equal(bot.apis['TestAPI'].cred['his identification'], "you dont need to see it");
+			assert.equal(bot._apis['TestAPI'].cred['his identification'], "you dont need to see it");
 			bot.shutdown();
 			done();
 		});
@@ -93,7 +93,7 @@ describe('Bot Event', function()
 			var bot = new Bot(mdb);
 			bot.on('called', function(request)
 			{
-				assert.deepEqual(request.spec, ref.calls[0]);
+				assert.deepEqual(request._spec, ref.calls[0]);
 				bot.shutdown();
 				done();
 			});
@@ -112,7 +112,7 @@ describe('Bot Event', function()
 				var bot = new Bot(mdb);
 				bot.on('resulted', function(request)
 				{
-					assert.deepEqual(request.spec, ref.calls[0]);
+					assert.deepEqual(request._spec, ref.calls[0]);
 					bot.shutdown();
 					done();
 				});

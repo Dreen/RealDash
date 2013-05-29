@@ -9,8 +9,8 @@ var logger;
 function Broadcast(db, users)
 {
 	EE.call(this);
+	this._users = users;
 	this.running = false;
-	this.users = users;
 	
 	var
 	mirror = this,
@@ -20,7 +20,7 @@ function Broadcast(db, users)
 	this.on('tick', function(i)
 	{
 		// loop through all clients
-		async.each(mirror.users, function(user, done)
+		async.each(mirror._users, function(user, done)
 		{
 			// if client accepts broadcasting
 			if (user.model.broadcast)
