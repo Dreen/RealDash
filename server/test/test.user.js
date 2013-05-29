@@ -15,7 +15,8 @@ before(function(done)
 		model : [
 			{
 				api : "TestAPI",
-				call : "TestAPI.getSimple()"
+				call : "TestAPI.getSimple()",
+				last : 0
 			}
 		]
 	};
@@ -44,12 +45,12 @@ describe('User', function()
 {
 	var user;
 
-	it('add to pool, on loaded_model: requestModel should contain a reference model call (clientModel.model[0])', function(done)
+	it('add to pool, on loaded_model: requestModel should contain a reference model call', function(done)
 	{
 		user = users.add(mockSocket);
 		user.on('loaded_model', function()
 		{
-			assert.deepEqual(user._requestModel[0], clientModel.model[0]);
+			assert.deepEqual(user.model, clientModel.model);
 			done();
 		});
 	});
@@ -88,7 +89,7 @@ describe('User', function()
 			assert.equal(msg.getCmd());
 			done();
 		});
-		user.outbox(msg);
+		user.outbox(msg.cmd, msg.args);
 	});
 
 	it('receive an invalid message - should send back a server error', function(done)

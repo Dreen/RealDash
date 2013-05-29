@@ -23,9 +23,20 @@ function Broadcast(db, users)
 		async.each(mirror._users, function(user, done)
 		{
 			// if client accepts broadcasting
-			if (user.model.broadcast)
+			if (user.broadcast)
 			{
-				// send him a msg?
+				for (var i=0; i<user.model.length; i++)
+				{
+					// get the jobs completed after the last job the user has seen
+					var call = user.model[i];
+					jobs_req.find({'start': {$gt: call.last}}).toArray(function(err, newJobs)
+					{
+						for(var j=0; j<newJobs.length; j++)
+						{
+							user.outbox('jobinfo', [newJobs[j]]); // TODO what do we want to send here
+						}
+					});
+				}
 			}
 		});
 	

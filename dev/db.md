@@ -30,7 +30,8 @@ clients:
 		model : [			// client model saved by the user
 			{
 				api : "TestAPI",
-				call : "TestAPI.getSimple()"
+				call : "TestAPI.getSimple()",
+				last : 1369853601124
 			},
 			...
 		]
@@ -39,11 +40,11 @@ clients:
 jobs:
 
 	{
-		call : "mtgox.currency(7, depth)",	// call signature
-		finished : true,			// job status
-		start: 1352029002,			// start timestamp
-		end: 1352029023,			// finish timestamp
-		exectime: 2920,				// precise execution time (ms)
-		result: {...}				// returned data
+		'call': "TestAPI.getSimple()",
+		'finished': true,
+		'start': 1369853601124,
+		'end': 1369853602124,
+		'exectime': 1000,
+		'result': {"result": "OK"}
 	}
 	
