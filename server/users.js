@@ -10,9 +10,9 @@ Users.prototype.get = function(id)
 	return this._users[id];
 }
 
-Users.prototype.add = function(socket)
+Users.prototype.add = function(db, socket)
 {
-	this._users[socket.id] = new User(socket);
+	this._users[socket.id] = new User(db, socket);
 	return this._users[socket.id];
 }
 

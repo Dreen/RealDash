@@ -1,7 +1,5 @@
 var
 assert	= require('assert'),
-User	= require('../user.js')(true),
-users	= require('../users.js'),
 mongo 	= require('mongodb');
 
 var clientModel, mockSocket, mdb, clients;
@@ -43,25 +41,27 @@ before(function(done)
 
 describe('User', function()
 {
-	var user;
-
-	it('add to pool, on loaded_model: requestModel should contain a reference model call', function(done)
+	it('on loaded_model: requestModel should contain a reference model call', function(done)
 	{
-		user = users.add(mockSocket);
+		var User = require('../user.js')();
+		var user = new User(mdb, mockSocket);
 		user.on('loaded_model', function()
 		{
 			assert.deepEqual(user.model, clientModel.model);
 			done();
 		});
-	});
-
-	it('added to pool (lookup)', function()
-	{
-		assert.equal(users.get(mockSocket.id).id, mockSocket.id);
+		user.on('error', function(msg)
+		{
+			assert.ok(false);
+			console.log(msg);
+			done();
+		});
 	});
 
 	it('receive a valid message', function(done)
 	{
+		var User = require('../user.js')();
+		var user = new User(mdb, mockSocket);
 		var msg = {
 			cid: "-dHkm7vtrjbWZewW6m_O",
 			cmd: "test",
@@ -73,11 +73,19 @@ describe('User', function()
 			assert.equal(msg.getCmd());
 			done();
 		});
+		user.on('error', function(msg)
+		{
+			assert.ok(false);
+			console.log(msg);
+			done();
+		});
 		user.inbox(msg);
 	});
 
 	it('send a valid message', function(done)
 	{
+		var User = require('../user.js')();
+		var user = new User(mdb, mockSocket);
 		var msg = {
 			cid: "-dHkm7vtrjbWZewW6m_O",
 			cmd: "test",
@@ -89,11 +97,19 @@ describe('User', function()
 			assert.equal(msg.getCmd());
 			done();
 		});
+		user.on('error', function(msg)
+		{
+			assert.ok(false);
+			console.log(msg);
+			done();
+		});
 		user.outbox(msg.cmd, msg.args);
 	});
 
 	it('receive an invalid message - should send back a server error', function(done)
 	{
+		var User = require('../user.js')();
+		var user = new User(mdb, mockSocket);
 		var msg = {
 			cid: "-dHkm7vtrjbWZewW6m_O",
 			args: [1, 2, 3]
@@ -105,11 +121,19 @@ describe('User', function()
 			assert.equal(msg.getArgs(0), 'Invalid client message');
 			done();
 		});
+		user.on('error', function(msg)
+		{
+			assert.ok(false);
+			console.log(msg);
+			done();
+		});
 		user.inbox(msg);
 	});
 
 	it('try to send an invalid meesage - should not send', function(done)
 	{
+		var User = require('../user.js')();
+		var user = new User(mdb, mockSocket);
 		var msg = {
 			cid: "-dHkm7vtrjbWZewW6m_O",
 			args: [1, 2, 3]
@@ -119,6 +143,12 @@ describe('User', function()
 			assert.ok(msg.isValid);
 			assert.equal(msg.getCmd(), 'serverError');
 			assert.equal(msg.getArgs(0), 'Invalid client message');
+			done();
+		});
+		user.on('error', function(msg)
+		{
+			assert.ok(false);
+			console.log(msg);
 			done();
 		});
 		user.inbox(msg);
