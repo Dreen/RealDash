@@ -1,7 +1,9 @@
 var
 util	= require('util'),
 EE	= require('events').EventEmitter,
-Winston = require('winston');
+Winston = require('winston'),
+
+Msg	= require('./msg.js');
 
 var logger;
 
@@ -47,7 +49,10 @@ function User(db, socket)
 	/**
 	 * Events
 	 */
-
+	this.on('error', function(msg)
+	{
+		logger.error(msg);
+	})
 
 	startinit();
 }
@@ -57,8 +62,35 @@ util.inherits(User, EE);
 /**
  * Class methods
  */
-User.prototype.inbox = function(msg){};
-User.prototype.outbox = function(cmd, args){};
+User.prototype.inbox = function(msgData)
+{
+	var msg = new Msg(msgData);
+	this.emit('recv', msg);
+
+	if (!msg.isValid)
+	{
+		this.outbox('serverError', ['Invalid client message']);
+		this.emit('error', 'Invalid client message: ' + msg.toString());
+	}
+};
+
+User.prototype.outbox = function(cmd, args)
+{
+	var msg = new Msg({
+		'cid':	this.id,
+		'cmd':	cmd,
+		'args':	args
+	});
+
+	if (msg.isValid)
+	{
+		this.emit('send', msg);
+	}
+	else
+	{
+		this.emit('error', 'Invalid server message');
+	}
+};
 
 module.exports = function(verbose)
 {

@@ -70,13 +70,7 @@ describe('User', function()
 		user.on('recv', function(msg)
 		{
 			assert.ok(msg.isValid);
-			assert.equal(msg.getCmd());
-			done();
-		});
-		user.on('error', function(msg)
-		{
-			assert.ok(false);
-			console.log(msg);
+			assert.equal(msg.getCmd(), "test");
 			done();
 		});
 		user.inbox(msg);
@@ -94,13 +88,7 @@ describe('User', function()
 		user.on('send', function(msg)
 		{
 			assert.ok(msg.isValid);
-			assert.equal(msg.getCmd());
-			done();
-		});
-		user.on('error', function(msg)
-		{
-			assert.ok(false);
-			console.log(msg);
+			assert.equal(msg.getCmd(), "test");
 			done();
 		});
 		user.outbox(msg.cmd, msg.args);
@@ -121,36 +109,23 @@ describe('User', function()
 			assert.equal(msg.getArgs(0), 'Invalid client message');
 			done();
 		});
-		user.on('error', function(msg)
-		{
-			assert.ok(false);
-			console.log(msg);
-			done();
-		});
 		user.inbox(msg);
 	});
 
-	it('try to send an invalid meesage - should not send', function(done)
+	it('try to send an invalid meesage - should not send and generate an error', function(done)
 	{
 		var User = require('../user.js')();
 		var user = new User(mdb, mockSocket);
-		var msg = {
-			cid: "-dHkm7vtrjbWZewW6m_O",
-			args: [1, 2, 3]
-		};
-		user.on('send', function(msg)
+		user.on('send', function()
 		{
-			assert.ok(msg.isValid);
-			assert.equal(msg.getCmd(), 'serverError');
-			assert.equal(msg.getArgs(0), 'Invalid client message');
+			assert.ok(false);
 			done();
 		});
 		user.on('error', function(msg)
 		{
-			assert.ok(false);
-			console.log(msg);
+			assert.equal(msg, 'Invalid server message');
 			done();
 		});
-		user.inbox(msg);
+		user.outbox([1, 2, 3]);
 	});
 });
