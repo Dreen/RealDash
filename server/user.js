@@ -1,5 +1,6 @@
 var
 util	= require('util'),
+f 	= require('util').format,
 EE	= require('events').EventEmitter,
 Winston = require('winston'),
 
@@ -16,7 +17,8 @@ function User(db, socket)
 	this._db = db;
 	this._channel = socket;
 	this.id = socket.id;
-	this.ip = ""; // TODO
+	this.ip = socket.handshake.address.address;
+	this.broadcast = true;
 	this.model = [];
 
 	/**
@@ -37,6 +39,7 @@ function User(db, socket)
 			if (data.length === 1)
 			{
 				mirror.model = data[0].model;
+				logger.info(f('User: Loaded model: %d calls', mirror.model.length));
 				mirror.emit('loaded_model');
 			}
 			else
@@ -51,7 +54,7 @@ function User(db, socket)
 	 */
 	this.on('error', function(msg)
 	{
-		logger.error(msg);
+		logger.error('User: ' + msg);
 	})
 
 	startinit();

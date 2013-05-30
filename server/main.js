@@ -3,11 +3,12 @@ mongo		= require('mongodb'),
 async		= require('async'),
 io		= require('socket.io'),
 Winston 	= require('winston'),
-quitter		= require('shutdown-handler'),
+//quitter		= require('shutdown-handler'),
 fs		= require('fs'),
 f 		= require('util').format,
 	
-Bot		= require('./bot.js')(),
+Bot		= require('./bot.js')(true),
+Users		= require('./users.js'),
 Broadcast	= require('./broadcast.js')(true),
 	
 logger		= new Winston.Logger({transports: [new Winston.transports.Console()]}),
@@ -17,8 +18,12 @@ err_handler = function(){}; //TODO
 // run as main module only
 if (!module.parent)
 {
+	// start the server
 	logger.info('Main: Init');
 	var port = process.argv[2] || 8000;
+	logger.info(f('Main: Serving at port %d', port));
+	// io.set('logger', null); // TODO diable socket.io outputs, do we have to upgrade to v1.0 ?
+	var server = io.listen(port);
 	
 	// connect to mongo
 	mongo.MongoClient.connect("mongodb://localhost:27017/bitapi", function(err, db)
@@ -47,39 +52,40 @@ if (!module.parent)
 			});
 		});
 
-		// start the server
-		logger.info(f('Main: Serving at port %d', port));
-		// io.set('logger', null); // TODO diable socket.io outputs, do we have to upgrade to v1.0 ?
-		var
-		server = io.listen(port),
-		users = require('./users.js');
+		// create a global pool
+		global.users = new Users(db);
 		
-		// server handler
+		// accept connections
 		server.sockets.on('connection' , function(socket)
 		{
 			logger.info(f('Main: Connected %s from %s', socket.id, socket.handshake.url));
-			var user = users.add(socket);
+			global.users.add(socket, function(user)
+			{
+				user.on('send', function(msgObj)
+				{
+					socket.send(msgObj.toString());
+				});
 
-			socket.on('message', function(msg) // TODO optional arg callback useful?
-			{
-				user.inbox(msg);
-				// scoket.send(msg);
-			});
-			
-			socket.on('disconnect', function()
-			{
-				user.emit('disconnected');
+				socket.on('message', function(msg) // TODO optional arg callback useful?
+				{
+					user.inbox(msg);
+				});
+				
+				socket.on('disconnect', function()
+				{
+					user.emit('disconnected');
+				});
 			});
 		});
 		
 		// start the broadcast thread
-		var bcast = new Broadcast(db, users);
+		var bcast = new Broadcast(db);
 		bcast.start();
 		
 		// shutdown handler
-		quitter.on('exit', function() {
-			bot.shutdown();
-			logger.info('Main: Shutting down');
-		});
+		//quitter.on('exit', function() {
+		//	bot.shutdown();
+		//	logger.info('Main: Shutting down');
+		//});
 	});
 }

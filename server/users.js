@@ -1,25 +1,66 @@
 var User = require('./user.js')();
 
-function Users()
+function Users(db)
 {
-	this._users = {};
+	this._db = db;
+	this.pool = {};
 }
 
 Users.prototype.get = function(id)
 {
-	return this._users[id];
+	return this.pool[id];
 }
 
-Users.prototype.add = function(db, socket)
+Users.prototype.add = function(socket, cb)
 {
-	this._users[socket.id] = new User(db, socket);
-	return this._users[socket.id];
+	var
+	mirror = this,
+	clients = this._db.collection('clients');
+
+	function pooluser()
+	{
+		console.log('Pooling ID ' + socket.id);
+		mirror.pool[socket.id] = new User(mirror._db, socket);
+		cb(mirror.pool[socket.id]);
+	}
+
+	clients.find({'uid': socket.id}).toArray(function(err, data)
+	{
+		if (data.length === 0)
+		{
+			clients.insert({
+				uid : socket.id,
+				lastip : socket.handshake.address.address,
+				lastSeen : new Date().getTime(),
+				model : [ // TODO: change this to empty array when we get an interface
+					{
+						api : "TestAPI",
+						call : "TestAPI.getSimple()",
+						last : 0
+					},
+					{
+						api : "TestAPI",
+						call : "TestAPI.postParam(bar)",
+						last : 0
+					}
+				]
+			}, pooluser);
+		}
+		else if(data.length === 1)
+		{
+			clients.uupdate({
+				uid : socket.id
+			}, {$set: {
+				lastip : socket.handshake.address.address,
+				lastSeen : new Date().getTime()
+			}}, pooluser);
+		}
+	});
 }
 
 Users.prototype.remove = function(id)
 {
-	// ? this._users[id].remove();
-	delete this._users[id];
+	delete this.pool[id];
 }
 
-module.exports = new Users();
+module.exports = Users;

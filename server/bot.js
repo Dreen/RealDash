@@ -136,7 +136,7 @@ function Bot(db)
 				var APIObj = new APIClass();
 				APIObj.cred = mirror._requestModel[apiName].cred;
 				mirror._apis[apiName] = APIObj;
-				logger.info(f('Loaded module %s from %s', apiName, modulePath));
+				logger.info(f('Bot: Loaded module %s from %s', apiName, modulePath));
 			}
 		}
 		mirror.emit('loaded_objects');

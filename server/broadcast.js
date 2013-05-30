@@ -6,10 +6,9 @@ Winston = require('winston');
 
 var logger;
 
-function Broadcast(db, users)
+function Broadcast(db)
 {
 	EE.call(this);
-	this._users = users;
 	this.running = false;
 	
 	var
@@ -19,9 +18,12 @@ function Broadcast(db, users)
 	// main loop
 	this.on('tick', function(i)
 	{
+		logger.warn('bcast tick');
+		debugger;
 		// loop through all clients
-		async.each(mirror._users, function(user, done)
+		async.each(global.users.pool, function(user, done)
 		{
+			logger.warn(user.id);
 			// if client accepts broadcasting
 			if (user.broadcast)
 			{
@@ -29,10 +31,12 @@ function Broadcast(db, users)
 				{
 					// get the jobs completed after the last job the user has seen
 					var call = user.model[i];
+					logger.warn(call);
 					jobs_req.find({'start': {$gt: call.last}}).toArray(function(err, newJobs)
 					{
 						for(var j=0; j<newJobs.length; j++)
 						{
+							logger.warn(newJobs[j]);
 							user.outbox('jobinfo', [newJobs[j]]); // TODO what do we want to send here
 						}
 					});
