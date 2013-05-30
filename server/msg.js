@@ -16,7 +16,8 @@ function Msg(data)
 		this._str = JSON.stringify(data);
 	}
 	this.isValid = _isObj(this._data) &&
-			'cid' in this._data && 'cmd' in this._data &&
+			'cid' in this._data && typeof this._data.cid == 'string' &&
+			'cmd' in this._data && typeof this._data.cmd == 'string' &&
 			(_isUndef(this._data['args']) || _isArray(this._data['args']));
 }
 
