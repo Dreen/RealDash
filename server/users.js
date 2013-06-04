@@ -21,7 +21,7 @@ Users.prototype.add = function(socket, cb)
 	{
 		return function()
 		{
-			console.log('Pooling %s ID %s', newuser ? 'new' : 'old', socket.id);
+			console.log('Pooling %s ID %s', newuser ? 'new' : 'old', socket.id); // TODO remove when we test with interface
 			mirror.pool[socket.id] = new User(mirror._db, socket);
 			cb(mirror.pool[socket.id]);
 		};
@@ -38,12 +38,12 @@ Users.prototype.add = function(socket, cb)
 				model : { // TODO: change this to empty array when we get an interface
 					"TestAPI.getSimple()": {
 						api : "TestAPI",
-						call : "TestAPI.getSimple()",
+						call : "TestAPI::getSimple()",
 						last : 0
 					},
 					"TestAPI.postParam(bar)": {
 						api : "TestAPI",
-						call : "TestAPI.postParam(bar)",
+						call : "TestAPI::postParam(bar)",
 						last : 0
 					}
 				}

@@ -15,7 +15,7 @@ before(function(done)
 		},
 		"calls": [
 			{
-				"sig": "TestAPI.getSimple()",
+				"sig": "TestAPI::getSimple()",
 				"method": "getSimple",
 				"args": [ ],
 				"timer": 30
@@ -49,7 +49,7 @@ describe('Bot Event', function()
 		bot.on('loaded_model', function()
 		{
 			assert.deepEqual(bot._requestModel['TestAPI'], ref);
-			assert.strictEqual(bot._jobs["TestAPI.getSimple()"], null);
+			assert.strictEqual(bot._jobs["TestAPI::getSimple()"], null);
 			bot.shutdown();
 			done();
 		});

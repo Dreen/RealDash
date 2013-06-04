@@ -12,7 +12,7 @@ model:
 		},
 		"calls": [
 			{
-				"sig": "TestAPI.getSimple()",
+				"sig": "TestAPI::getSimple()",
 				"method": "getSimple",
 				"args": [ ],
 				"timer": 30
@@ -28,9 +28,9 @@ clients:
 		lastip : "00.00.00.000",	// last IP used by user
 		lastSeen : 1369853601124,	// timestamp of last activitiy (ms)
 		model : {			// client model saved by the user
-			"TestAPI.getSimple()": {
+			"TestAPI::getSimple()": {
 				api : "TestAPI",
-				call : "TestAPI.getSimple()",
+				call : "TestAPI::getSimple()",
 				last : 1369853601124
 			},
 			...
@@ -40,7 +40,7 @@ clients:
 jobs:
 
 	{
-		'call': "TestAPI.getSimple()",
+		'call': "TestAPI::getSimple()",
 		'finished': true,
 		'start': 1369853601124,
 		'end': 1369853602124,

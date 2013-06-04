@@ -8,12 +8,12 @@
 		},
 		"calls": [
 			{
-				"sig": "TestAPI.getSimple()",
+				"sig": "TestAPI::getSimple()",
 				"method": "getSimple",
 				"args": [ ],
 				"timer": 30
 			}, {
-				"sig": "TestAPI.postParam(bar)",
+				"sig": "TestAPI::postParam(bar)",
 				"method": "postParam",
 				"args": [ "bar" ],
 				"timer": 20

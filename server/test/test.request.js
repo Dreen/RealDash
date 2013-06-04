@@ -17,7 +17,7 @@ describe('Request', function()
 		TestAPI.prototype[callName] = TestAPIMethods[callName];
 	}
 	var req = new Request(new TestAPI(), {
-		"sig": "TestAPI.postParam(bar)",
+		"sig": "TestAPI::postParam(bar)",
 		"method": "postParam",
 		"args": [ "bar" ],
 		"timer": 20
@@ -25,7 +25,7 @@ describe('Request', function()
 
 	it('toString() should return the call signature', function()
 	{
-		assert.equal(req.toString(), 'TestAPI.postParam(bar)');
+		assert.equal(req.toString(), 'TestAPI::postParam(bar)');
 	});
 
 	it('performing request', function(done)
