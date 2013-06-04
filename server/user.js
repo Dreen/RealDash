@@ -19,7 +19,7 @@ function User(db, socket)
 	this.id = socket.id;
 	this.ip = socket.handshake.address.address;
 	this.broadcast = true;
-	this.model = [];
+	this.model = {};
 
 	/**
 	 * Local variables
@@ -39,7 +39,7 @@ function User(db, socket)
 			if (data.length === 1)
 			{
 				mirror.model = data[0].model;
-				logger.info(f('User: Loaded model: %d calls', mirror.model.length));
+				logger.info(f('User: Loaded model: %d calls', Object.keys(mirror.model).length));
 				mirror.emit('loaded_model');
 			}
 			else

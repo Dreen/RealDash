@@ -10,17 +10,22 @@ before(function(done)
 		uid : "-dHkm7vtrjbWZewW6m_O",
 		lastip : "00.00.00.000",
 		lastSeen : 1369853601124,
-		model : [
-			{
+		model : {
+			"TestAPI::getSimple()": {
 				api : "TestAPI",
-				call : "TestAPI.getSimple()",
+				call : "TestAPI::getSimple()",
 				last : 0
 			}
-		]
+		}
 	};
 
 	mockSocket = {
-		id: "-dHkm7vtrjbWZewW6m_O"
+		id: "-dHkm7vtrjbWZewW6m_O",
+		handshake: {
+			address: {
+				address: "0.0.0.0"
+			}
+		}
 	};
 
 	mongo.MongoClient.connect("mongodb://localhost:27017/bitapi_test", function(err, db)

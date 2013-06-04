@@ -1,12 +1,13 @@
 var
 util	= require('util'),
 async	= require('async'),
+io	= require('socket.io'),
 EE	= require('events').EventEmitter,
 Winston = require('winston');
 
 var logger;
 
-function Broadcast(db)
+function Broadcast(db, getUserList)
 {
 	EE.call(this);
 	this.running = false;
@@ -18,12 +19,10 @@ function Broadcast(db)
 	// main loop
 	this.on('tick', function(i)
 	{
-		logger.warn('bcast tick');
-		debugger;
+		var users = getUserList();
 		// loop through all clients
-		async.each(global.users.pool, function(user, done)
+		async.each(users, function(user, done)
 		{
-			logger.warn(user.id);
 			// if client accepts broadcasting
 			if (user.broadcast)
 			{
@@ -38,6 +37,7 @@ function Broadcast(db)
 						{
 							logger.warn(newJobs[j]);
 							user.outbox('jobinfo', [newJobs[j]]); // TODO what do we want to send here
+							user.model[i].last = newJobs[j].start;
 						}
 					});
 				}

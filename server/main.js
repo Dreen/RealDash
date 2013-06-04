@@ -3,7 +3,7 @@ mongo		= require('mongodb'),
 async		= require('async'),
 io		= require('socket.io'),
 Winston 	= require('winston'),
-//quitter		= require('shutdown-handler'),
+quitter		= require('shutdown-handler'),
 fs		= require('fs'),
 f 		= require('util').format,
 	
@@ -23,7 +23,7 @@ if (!module.parent)
 	var port = process.argv[2] || 8000;
 	logger.info(f('Main: Serving at port %d', port));
 	// io.set('logger', null); // TODO diable socket.io outputs, do we have to upgrade to v1.0 ?
-	var server = io.listen(port);
+	var server = io.listen(port, {log:false});
 	
 	// connect to mongo
 	mongo.MongoClient.connect("mongodb://localhost:27017/bitapi", function(err, db)
@@ -53,13 +53,13 @@ if (!module.parent)
 		});
 
 		// create a global pool
-		global.users = new Users(db);
+		var users = new Users(db);
 		
 		// accept connections
 		server.sockets.on('connection' , function(socket)
 		{
 			logger.info(f('Main: Connected %s from %s', socket.id, socket.handshake.url));
-			global.users.add(socket, function(user)
+			users.add(socket, function(user)
 			{
 				user.on('send', function(msgObj)
 				{
@@ -77,15 +77,25 @@ if (!module.parent)
 				});
 			});
 		});
+
 		
-		// start the broadcast thread
-		var bcast = new Broadcast(db);
+		// start the broadcast thread, pass a method to get list of users
+		var bcast = new Broadcast(db, function()
+		{
+			var sockets = server.sockets.clients();
+			var userlist = [];
+			for (var i=0; i<sockets.length; i++)
+			{
+				userlist.push(users.get(sockets[i].id));
+			}
+			return userlist;
+		});
 		bcast.start();
 		
 		// shutdown handler
-		//quitter.on('exit', function() {
-		//	bot.shutdown();
-		//	logger.info('Main: Shutting down');
-		//});
+		quitter.on('exit', function() {
+			bot.shutdown();
+			logger.info('Main: Shutting down');
+		});
 	});
 }

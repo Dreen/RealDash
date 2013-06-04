@@ -27,14 +27,14 @@ clients:
 		uid : "-dHkm7vtrjbWZewW6m_O",	// index, user ID
 		lastip : "00.00.00.000",	// last IP used by user
 		lastSeen : 1369853601124,	// timestamp of last activitiy (ms)
-		model : [			// client model saved by the user
-			{
+		model : {			// client model saved by the user
+			"TestAPI.getSimple()": {
 				api : "TestAPI",
 				call : "TestAPI.getSimple()",
 				last : 1369853601124
 			},
 			...
-		]
+		}
 	}
 
 jobs:

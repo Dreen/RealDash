@@ -17,11 +17,14 @@ Users.prototype.add = function(socket, cb)
 	mirror = this,
 	clients = this._db.collection('clients');
 
-	function pooluser()
+	function pooluser(newuser)
 	{
-		console.log('Pooling ID ' + socket.id);
-		mirror.pool[socket.id] = new User(mirror._db, socket);
-		cb(mirror.pool[socket.id]);
+		return function()
+		{
+			console.log('Pooling %s ID %s', newuser ? 'new' : 'old', socket.id);
+			mirror.pool[socket.id] = new User(mirror._db, socket);
+			cb(mirror.pool[socket.id]);
+		};
 	}
 
 	clients.find({'uid': socket.id}).toArray(function(err, data)
@@ -32,28 +35,28 @@ Users.prototype.add = function(socket, cb)
 				uid : socket.id,
 				lastip : socket.handshake.address.address,
 				lastSeen : new Date().getTime(),
-				model : [ // TODO: change this to empty array when we get an interface
-					{
+				model : { // TODO: change this to empty array when we get an interface
+					"TestAPI.getSimple()": {
 						api : "TestAPI",
 						call : "TestAPI.getSimple()",
 						last : 0
 					},
-					{
+					"TestAPI.postParam(bar)": {
 						api : "TestAPI",
 						call : "TestAPI.postParam(bar)",
 						last : 0
 					}
-				]
-			}, pooluser);
+				}
+			}, pooluser(true));
 		}
 		else if(data.length === 1)
 		{
-			clients.uupdate({
+			clients.update({
 				uid : socket.id
 			}, {$set: {
 				lastip : socket.handshake.address.address,
 				lastSeen : new Date().getTime()
-			}}, pooluser);
+			}}, pooluser(false));
 		}
 	});
 }
