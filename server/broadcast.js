@@ -26,18 +26,20 @@ function Broadcast(db, getUserList)
 			// if client accepts broadcasting
 			if (user.broadcast)
 			{
-				for (var i=0; i<user.model.length; i++)
+				for (callName in user.model)
 				{
 					// get the jobs completed after the last job the user has seen
-					var call = user.model[i];
-					logger.warn(call);
+					var call = user.model[callName];
 					jobs_req.find({'start': {$gt: call.last}}).toArray(function(err, newJobs)
 					{
 						for(var j=0; j<newJobs.length; j++)
 						{
-							logger.warn(newJobs[j]);
-							user.outbox('jobinfo', [newJobs[j]]); // TODO what do we want to send here
-							user.model[i].last = newJobs[j].start;
+							if (newJobs[j].start > user.model[newJobs[j].sig].last)
+							{
+								user.outbox('jobinfo', [newJobs[j]]); // TODO what do we want to send here
+								console.log('Last for %s was %d now %d', newJobs[j].sig, user.model[newJobs[j].sig].last, newJobs[j].start);
+								user.model[newJobs[j].sig].last = newJobs[j].start;
+							}
 						}
 					});
 				}
@@ -48,7 +50,7 @@ function Broadcast(db, getUserList)
 		{
 			setTimeout(function(){
 				mirror.emit('tick', ++i);
-			}, 1000);
+			}, 10);
 		}
 		else
 		{

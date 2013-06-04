@@ -38,12 +38,12 @@ Users.prototype.add = function(socket, cb)
 				model : { // TODO: change this to empty array when we get an interface
 					"TestAPI::getSimple()": {
 						api : "TestAPI",
-						call : "TestAPI::getSimple()",
+						sig : "TestAPI::getSimple()",
 						last : 0
 					},
 					"TestAPI::postParam(bar)": {
 						api : "TestAPI",
-						call : "TestAPI::postParam(bar)",
+						sig : "TestAPI::postParam(bar)",
 						last : 0
 					}
 				}

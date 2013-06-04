@@ -13,7 +13,7 @@ before(function(done)
 		model : {
 			"TestAPI::getSimple()": {
 				api : "TestAPI",
-				call : "TestAPI::getSimple()",
+				sig : "TestAPI::getSimple()",
 				last : 0
 			}
 		}
@@ -55,10 +55,10 @@ describe('User', function()
 			assert.deepEqual(user.model, clientModel.model);
 			done();
 		});
-		user.on('error', function(msg)
+		user.on('error', function(msgObj)
 		{
 			assert.ok(false);
-			console.log(msg);
+			console.log(msgObj);
 			done();
 		});
 	});
@@ -72,10 +72,10 @@ describe('User', function()
 			cmd: "test",
 			args: [1, 2, 3]
 		};
-		user.on('recv', function(msg)
+		user.on('recv', function(msgObj)
 		{
-			assert.ok(msg.isValid);
-			assert.equal(msg.getCmd(), "test");
+			assert.ok(msgObj.isValid);
+			assert.equal(msgObj.getCmd(), "test");
 			done();
 		});
 		user.inbox(msg);
@@ -90,10 +90,10 @@ describe('User', function()
 			cmd: "test",
 			args: [1, 2, 3]
 		};
-		user.on('send', function(msg)
+		user.on('send', function(msgObj)
 		{
-			assert.ok(msg.isValid);
-			assert.equal(msg.getCmd(), "test");
+			assert.ok(msgObj.isValid);
+			assert.equal(msgObj.getCmd(), "test");
 			done();
 		});
 		user.outbox(msg.cmd, msg.args);
@@ -107,11 +107,11 @@ describe('User', function()
 			cid: "-dHkm7vtrjbWZewW6m_O",
 			args: [1, 2, 3]
 		};
-		user.on('send', function(msg)
+		user.on('send', function(msgObj)
 		{
-			assert.ok(msg.isValid);
-			assert.equal(msg.getCmd(), 'serverError');
-			assert.equal(msg.getArgs(0), 'Invalid client message');
+			assert.ok(msgObj.isValid);
+			assert.equal(msgObj.getCmd(), 'serverError');
+			assert.equal(msgObj.getArgs(0), 'Invalid client message');
 			done();
 		});
 		user.inbox(msg);

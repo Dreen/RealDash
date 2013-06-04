@@ -64,7 +64,7 @@ function Bot(db)
 			function(done)
 			{
 				jobs_req.insert({
-					'call': call['sig'],
+					'sig': call['sig'],
 					'finished': false,
 					'start': tStart,
 					'end': -1,
@@ -95,7 +95,7 @@ function Bot(db)
 			function(done)
 			{
 				jobs_req.update({
-					'call': req.toString(),
+					'sig': req.toString(),
 					'start': req.tStart
 				}, {$set: {
 					'finished' : true,
@@ -169,7 +169,7 @@ function Bot(db)
 		{
 			setTimeout(function(){
 				mirror.emit('tick', ++i);
-			}, 1000);
+			}, 10);
 		}
 		else
 		{

@@ -30,17 +30,17 @@ clients:
 		model : {			// client model saved by the user
 			"TestAPI::getSimple()": {
 				api : "TestAPI",
-				call : "TestAPI::getSimple()",
+				sig : "TestAPI::getSimple()",
 				last : 1369853601124
 			},
 			...
 		}
 	}
 
-jobs:
+jobs_req:
 
 	{
-		'call': "TestAPI::getSimple()",
+		'sig': "TestAPI::getSimple()",
 		'finished': true,
 		'start': 1369853601124,
 		'end': 1369853602124,

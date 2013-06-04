@@ -67,27 +67,33 @@ util.inherits(User, EE);
  */
 User.prototype.inbox = function(msgData)
 {
-	var msg = new Msg(msgData);
-	this.emit('recv', msg);
+	var msgObj = new Msg(msgData);
+	this.emit('recv', msgObj);
 
-	if (!msg.isValid)
+	if (!msgObj.isValid)
 	{
 		this.outbox('serverError', ['Invalid client message']);
-		this.emit('error', 'Invalid client message: ' + msg.toString());
+		this.emit('error', 'Invalid client message: ' + msgObj.toString());
+	}
+	else
+	{
+		logger.info('User: In: ' + msgObj.toString());
+		// TODO: process message
 	}
 };
 
 User.prototype.outbox = function(cmd, args)
 {
-	var msg = new Msg({
+	var msgObj = new Msg({
 		'cid':	this.id,
 		'cmd':	cmd,
 		'args':	args
 	});
 
-	if (msg.isValid)
+	if (msgObj.isValid)
 	{
-		this.emit('send', msg);
+		this.emit('send', msgObj);
+		logger.info('User: Out: ' + msgObj.toString());
 	}
 	else
 	{
