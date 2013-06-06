@@ -169,7 +169,7 @@ function Bot(db)
 		{
 			setTimeout(function(){
 				mirror.emit('tick', ++i);
-			}, 10);
+			}, 100);
 		}
 		else
 		{

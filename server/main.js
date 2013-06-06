@@ -2,7 +2,6 @@ var
 mongo		= require('mongodb'),
 async		= require('async'),
 Winston 	= require('winston'),
-quitter		= require('shutdown-handler'),
 fs		= require('fs'),
 f 		= require('util').format,
 resolve		= require('path').resolve,
@@ -102,7 +101,7 @@ if (!module.parent)
 		bcast.start();
 		
 		// shutdown handler
-		quitter.on('exit', function() {
+		require('shutdown-handler').on('exit', function() {
 			bot.shutdown();
 			logger.info('Main: Shutting down');
 		});

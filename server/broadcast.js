@@ -50,7 +50,7 @@ function Broadcast(db, getUserList)
 		{
 			setTimeout(function(){
 				mirror.emit('tick', ++i);
-			}, 10);
+			}, 100);
 		}
 		else
 		{
