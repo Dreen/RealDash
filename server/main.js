@@ -13,6 +13,7 @@ io		= require('socket.io').listen(server, {log:false}),
 Bot		= require('./bot.js')(true),
 Users		= require('./users.js'),
 Broadcast	= require('./broadcast.js')(true),
+REST            = require('./rest.js'),
 	
 logger		= new Winston.Logger({transports: [new Winston.transports.Console()]}),
 
@@ -54,7 +55,7 @@ if (!module.parent)
 				bot = new Bot(db);
 				bot.on('loaded_objects', function()
 				{
-					bot.start();
+					//bot.start();
 					logger.info('Main: Init complete');
 				});
 			});
@@ -86,6 +87,8 @@ if (!module.parent)
 			});
 		});
 
+                // serve data through REST
+                REST(app, db);
 		
 		// start the broadcast thread, pass a method to get list of users
 		var bcast = new Broadcast(db, function()
