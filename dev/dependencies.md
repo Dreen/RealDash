@@ -5,3 +5,4 @@
  - winston
  - shutdown-handler
  - async
+ - express

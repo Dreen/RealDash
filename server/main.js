@@ -1,11 +1,14 @@
 var
 mongo		= require('mongodb'),
 async		= require('async'),
-io		= require('socket.io'),
 Winston 	= require('winston'),
 quitter		= require('shutdown-handler'),
 fs		= require('fs'),
 f 		= require('util').format,
+
+app		= require('express')()
+server		= require('http').createServer(app)
+io		= require('socket.io').listen(server),
 	
 Bot		= require('./bot.js')(true),
 Users		= require('./users.js'),
@@ -23,7 +26,7 @@ if (!module.parent)
 	var port = process.argv[2] || 8000;
 	logger.info(f('Main: Serving at port %d', port));
 	// io.set('logger', null); // TODO diable socket.io outputs, do we have to upgrade to v1.0 ?
-	var server = io.listen(port, {log:false});
+	server.listen(port);
 	
 	// connect to mongo
 	mongo.MongoClient.connect("mongodb://localhost:27017/bitapi", function(err, db)
@@ -56,7 +59,7 @@ if (!module.parent)
 		var users = new Users(db);
 		
 		// accept connections
-		server.sockets.on('connection' , function(socket)
+		io.sockets.on('connection' , function(socket)
 		{
 			logger.info(f('Main: Connected %s from %s', socket.id, socket.handshake.url));
 			users.add(socket, function(user)
@@ -82,7 +85,7 @@ if (!module.parent)
 		// start the broadcast thread, pass a method to get list of users
 		var bcast = new Broadcast(db, function()
 		{
-			var sockets = server.sockets.clients();
+			var sockets = io.sockets.clients();
 			var userlist = [];
 			for (var i=0; i<sockets.length; i++)
 			{
