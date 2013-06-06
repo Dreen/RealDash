@@ -5,6 +5,7 @@ Winston 	= require('winston'),
 quitter		= require('shutdown-handler'),
 fs		= require('fs'),
 f 		= require('util').format,
+resolve		= require('path').resolve,
 
 app		= require('express')()
 server		= require('http').createServer(app)
@@ -25,8 +26,13 @@ if (!module.parent)
 	logger.info('Main: Init');
 	var port = process.argv[2] || 8000;
 	logger.info(f('Main: Serving at port %d', port));
-	// io.set('logger', null); // TODO diable socket.io outputs, do we have to upgrade to v1.0 ?
 	server.listen(port);
+
+	// serve the console client
+	app.get('/', function(req, res)
+	{
+		res.sendfile(resolve('../client/console.html'));
+	});
 	
 	// connect to mongo
 	mongo.MongoClient.connect("mongodb://localhost:27017/bitapi", function(err, db)
