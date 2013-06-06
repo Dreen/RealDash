@@ -8,7 +8,7 @@ f 		= require('util').format,
 
 app		= require('express')()
 server		= require('http').createServer(app)
-io		= require('socket.io').listen(server),
+io		= require('socket.io').listen(server, {log:false}),
 	
 Bot		= require('./bot.js')(true),
 Users		= require('./users.js'),
