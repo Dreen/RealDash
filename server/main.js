@@ -75,7 +75,7 @@ if (!module.parent)
 					socket.send(msgObj.toString());
 				});
 
-				socket.on('message', function(msg) // TODO optional arg callback useful?
+				socket.on('message', function(msg)
 				{
 					user.inbox(msg);
 				});
@@ -104,9 +104,9 @@ if (!module.parent)
 		bcast.start();
 		
 		// shutdown handler
-		//require('shutdown-handler').on('exit', function() {
-		//	bot.shutdown();
-		//	logger.info('Main: Shutting down');
-		//});
+		require('shutdown-handler').on('exit', function() {
+			bot.shutdown();
+			logger.info('Main: Shutting down');
+		});
 	});
 }
