@@ -53,7 +53,6 @@ module.exports = function(app, db)
          * start_end is optional, if present, returns a list of jobs that started in the specified interval. if absent, only a single job is returned.
          * returns an object for a single job or an array for a list of jobs
          */
-         // TODO: sort by start
         app.get('/jobs_req/:sig/:start/:start_end?', function(req, res)
         {
                 // input params
@@ -82,7 +81,7 @@ module.exports = function(app, db)
                                 $gte: start,
                                 $lte: start_end
                         };
-                        jobs_req.find(findSpec).toArray(function(err, data)
+                        jobs_req.find(findSpec).sort({'start':1}).toArray(function(err, data)
                         {
                                 if (_isArray(data) && data.length > 0)
                                 {
