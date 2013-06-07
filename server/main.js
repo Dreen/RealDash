@@ -104,9 +104,9 @@ if (!module.parent)
 		bcast.start();
 		
 		// shutdown handler
-		require('shutdown-handler').on('exit', function() {
-			bot.shutdown();
-			logger.info('Main: Shutting down');
-		});
+		//require('shutdown-handler').on('exit', function() {
+		//	bot.shutdown();
+		//	logger.info('Main: Shutting down');
+		//});
 	});
 }

@@ -53,6 +53,7 @@ module.exports = function(app, db)
          * start_end is optional, if present, returns a list of jobs that started in the specified interval. if absent, only a single job is returned.
          * returns an object for a single job or an array for a list of jobs
          */
+         // TODO: sort by start
         app.get('/jobs_req/:sig/:start/:start_end?', function(req, res)
         {
                 // input params
@@ -72,32 +73,34 @@ module.exports = function(app, db)
                 findSpec = {
                         'sig': sig,
                         'start' : {$gte: start}
-                },
-                findMethod = 'findOne';
+                };
 
                 // optional query params
-                if (!isNaN(start_end))
+                if (!isNaN(start_end) && start_end > start)
                 {
                         findSpec['start'] = {
-                                $and: [
-                                        {$gte: start},
-                                        {$lte: start_end}
-                                ]
+                                $gte: start,
+                                $lte: start_end
                         };
-                        findMethod = 'find';
+                        jobs_req.find(findSpec).toArray(function(err, data)
+                        {
+                                if (_isArray(data) && data.length > 0)
+                                {
+                                        res.status(200).json(data);
+                                }
+                                else e404(res);
+                        });
                 }
-
-                jobs_req[findMethod](findSpec).toArray(function(err, data)
+                else
                 {
-                        if (data.length == 1 && _isObj(data[0]))
+                        jobs_req.findOne(findSpec, function(err, data)
                         {
-                                res.status(200).json(data[0]);
-                        }
-                        else if (data.length > 0)
-                        {
-                                res.status(200).json(data);
-                        }
-                        else e404(res);
-                });
+                                if (_isObj(data))
+                                {
+                                        res.status(200).json(data);
+                                }
+                                else e404(res);
+                        });
+                }
         });
 };
