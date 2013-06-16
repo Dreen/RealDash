@@ -1,14 +1,19 @@
 <html>
 <head>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.10/socket.io.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.1.js"></script>
+<script type="text/javascript" src="http://localhost/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="http://underscorejs.org/underscore.js"></script>
+<script type="text/javascript" src="http://backbonejs.org/backbone.js"></script>
 <script>
-  //var socket = io.connect('http://ec2-54-245-170-7.us-west-2.compute.amazonaws.com:8000');
-  var socket = io.connect('127.0.0.1:8000');
-  socket.on('connect', function () {
-    socket.on('message', function (msg) {
-      console.log('-> ' + msg);
-    });
-  });
+        //var socket = io.connect('http://ec2-54-245-170-7.us-west-2.compute.amazonaws.com:8000');
+        var socket = io.connect('127.0.0.1:8000');
+        socket.on('connect', function ()
+        {
+                socket.on('message', function (msg)
+                {
+                        console.log('-> ' + msg);
+                });
+        });
 </script>
 </head>
 <body>
