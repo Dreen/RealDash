@@ -40,14 +40,14 @@ if (!module.parent)
 		if (err) throw err;
 
 		// read the server model from a file and update it in the db
-		var model = db.collection('model'),
+		var apis = db.collection('apis'),
 		bot;
-		model.remove(function()
+		apis.remove(function()
 		{
 			var serverModel = JSON.parse(fs.readFileSync(__dirname + '/serverModel.json').toString());
 			async.each(serverModel, function(item, done)
 			{
-				model.insert(item, done);
+				apis.insert(item, done);
 			},
 			function()
 			{

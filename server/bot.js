@@ -27,7 +27,7 @@ function Bot(db)
 	 * Local variables
 	 */
 	var
-	model = this._db.collection('model'),
+	apis = this._db.collection('apis'),
 	jobs_req = this._db.collection('jobs_req'),
 	mirror = this;
 
@@ -36,8 +36,8 @@ function Bot(db)
 	 */
 	function startinit()
 	{
-		// load model
-		model.find().toArray(function(err, data)
+		// load apis
+		apis.find().toArray(function(err, data)
 		{
 			for(var i=0; i<data.length; i++)
 			{
@@ -49,7 +49,7 @@ function Bot(db)
 			}
 			logger.info(f('Bot: API Objects: %d', data.length));
 			logger.info(f('Bot: Calls: %d', Object.keys(mirror._jobs).length));
-			mirror.emit('loaded_model');
+			mirror.emit('loaded_apis');
 		});
 	}
 
@@ -116,7 +116,7 @@ function Bot(db)
 	 * Events
 	 */
 	// load api objects
-	this.on('loaded_model', function()
+	this.on('loaded_apis', function()
 	{
 		for (apiName in mirror._requestModel)
 		{

@@ -13,8 +13,8 @@ function testSuite(APIOBJ, objname)
 				var api = new APIOBJ();
 
 				var worker = api.go({
-					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-					'path': '/~ec2-user/data/api.get.simple.php'
+					'host': 'localhost',
+					'path': '/realdash-test-data/api.get.simple.php'
 				});
 
 				worker(function(data)
@@ -29,8 +29,8 @@ function testSuite(APIOBJ, objname)
 				var api = new APIOBJ();
 				
 				var worker = api.go({
-					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-					'path': '/~ec2-user/data/api.get.param.php'
+					'host': 'localhost',
+					'path': '/realdash-test-data/api.get.param.php'
 				}, null, {
 					'foo': 'bar'
 				});
@@ -50,8 +50,8 @@ function testSuite(APIOBJ, objname)
 				var api = new APIOBJ();
 				
 				var worker = api.go({
-					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-					'path': '/~ec2-user/data/api.post.simple.php',
+					'host': 'localhost',
+					'path': '/realdash-test-data/api.post.simple.php',
 					'method': 'POST'
 				});
 
@@ -67,8 +67,8 @@ function testSuite(APIOBJ, objname)
 				var api = new APIOBJ();
 				
 				var worker = api.go({
-					'host': 'ec2-54-245-170-7.us-west-2.compute.amazonaws.com',
-					'path': '/~ec2-user/data/api.post.param.php'
+					'host': 'localhost',
+					'path': '/realdash-test-data/api.post.param.php'
 				}, {
 					'foo': 'bar'
 				});

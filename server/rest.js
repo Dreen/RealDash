@@ -13,20 +13,20 @@ module.exports = function(app, db)
 
 
         /*
-         * Gets Model information identified by API name.
+         * Gets apis information identified by API name.
          * If call is specified, gets only information about specific call
          * returns an object
          */
-        app.get('/model/:name/:call?', function(req, res)
+        app.get('/apis/:name/:call?', function(req, res)
         {
-                var model = db.collection('model');
-                model.find({
+                var apis = db.collection('apis');
+                apis.find({
                         'name': req.params.name
                 }).toArray(function(err, data)
                 {
                         if (data.length === 1 && _isObj(data[0]))
                         {
-                                // the whole model
+                                // the whole api
                                 if (typeof req.params.call == "undefined")
                                 {
                                         res.status(200).json(data[0]);

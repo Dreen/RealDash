@@ -2,7 +2,7 @@ var
 assert	= require('assert'),
 mongo 	= require('mongodb');
 
-var ref, mdb, model, jobs_req;
+var ref, mdb, apis, jobs_req;
 
 before(function(done)
 {
@@ -29,11 +29,11 @@ before(function(done)
 		else
 		{
 			mdb = db;
-			model = mdb.collection('model');
+			apis = mdb.collection('apis');
 			jobs_req = mdb.collection('jobs_req');
-			model.remove(function()
+			apis.remove(function()
 			{
-				model.insert(ref, done);
+				apis.insert(ref, done);
 			});
 		}
 	});
@@ -41,12 +41,12 @@ before(function(done)
 
 describe('Bot Event', function()
 {
-	it('on loaded_model: requestModel should contain the model of TestAPI and a null for its call in #jobs', function(done)
+	it('on loaded_apis: requestModel should contain the model of TestAPI and a null for its call in #jobs', function(done)
 	{
 		var Bot	= require('../bot.js')();
 		var bot = new Bot(mdb);
 		bot.removeAllListeners(); // dont test further
-		bot.on('loaded_model', function()
+		bot.on('loaded_apis', function()
 		{
 			assert.deepEqual(bot._requestModel['TestAPI'], ref);
 			assert.strictEqual(bot._jobs["TestAPI::getSimple()"], null);

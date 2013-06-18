@@ -1,7 +1,7 @@
 db schema/example
 ----------
 
-model:
+apis:
 
 	{
 		"name": "TestAPI",			// index
