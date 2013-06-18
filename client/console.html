@@ -15,11 +15,11 @@ socket.on('connect', function ()
         });
 });
 
-var ModelModel, ModelCollection, ModelView;
+var APIModel, APICollection, APIView;
 
 $(function()
 {
-        ModelModel = Backbone.Model.extend({
+        APIModel = Backbone.Model.extend({
                 defaults: {
                         "name": "",
                         "file": "",
@@ -28,13 +28,18 @@ $(function()
                         "calls": []
                 },
 
+                initialize: function()
+                {
+                        console.log('init api');
+                },
+
                 url: function()
                 {
                         return this.id ? '/model/' + this.name : '';
                 }
         });
 
-        var modelModel = new ModelModel({
+        var apiModel = new APIModel({
                 "name": "TestAPI",
                 "file": "testapi.js",
                 "author": "greg.balaga@gmail.com",
@@ -55,12 +60,12 @@ $(function()
                 ]
         });
 
-        ModelCollection = Backbone.Collection.extend({
-                model: ModelModel,
+        APICollection = Backbone.Collection.extend({
+                model: APIModel,
                 url: '/model'
         });
 
-        ModelView = Backbone.View.extend({
+        APIView = Backbone.View.extend({
                 tagname: 'li',
                 el: $('#models'),
                 tpl: _.template('<li><%= s %></li>'),
@@ -73,11 +78,11 @@ $(function()
                 }
         });
 
-        var modelView = new ModelView({
-                model: modelModel
+        var apiView = new APIView({
+                model: apiModel
         });
 
-        modelView.render();
+        apiView.render();
 });
 </script>
 </head>
