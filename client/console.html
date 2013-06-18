@@ -5,17 +5,83 @@
 <script type="text/javascript" src="http://underscorejs.org/underscore.js"></script>
 <script type="text/javascript" src="http://backbonejs.org/backbone.js"></script>
 <script>
-        //var socket = io.connect('http://ec2-54-245-170-7.us-west-2.compute.amazonaws.com:8000');
-        var socket = io.connect('127.0.0.1:8000');
-        socket.on('connect', function ()
+//var socket = io.connect('http://ec2-54-245-170-7.us-west-2.compute.amazonaws.com:8000');
+var socket = io.connect('127.0.0.1:8000');
+socket.on('connect', function ()
+{
+        socket.on('message', function (msg)
         {
-                socket.on('message', function (msg)
-                {
-                        console.log('-> ' + msg);
-                });
+                console.log('-> ' + msg);
         });
+});
+
+var ModelModel, ModelCollection, ModelView;
+
+$(function()
+{
+        ModelModel = Backbone.Model.extend({
+                defaults: {
+                        "name": "",
+                        "file": "",
+                        "author": "",
+                        "cred": {},
+                        "calls": []
+                },
+
+                url: function()
+                {
+                        return this.id ? '/model/' + this.name : '';
+                }
+        });
+
+        var modelModel = new ModelModel({
+                "name": "TestAPI",
+                "file": "testapi.js",
+                "author": "greg.balaga@gmail.com",
+                "cred": {
+                        "his identification": "you dont need to see it"
+                },
+                "calls": [ {
+                                "sig": "TestAPI::getSimple()",
+                                "method": "getSimple",
+                                "args": [ ],
+                                "timer": 30
+                        }, {
+                                "sig": "TestAPI::postParam(bar)",
+                                "method": "postParam",
+                                "args": [ "bar" ],
+                                "timer": 20
+                        }
+                ]
+        });
+
+        ModelCollection = Backbone.Collection.extend({
+                model: ModelModel,
+                url: '/model'
+        });
+
+        ModelView = Backbone.View.extend({
+                tagname: 'li',
+                el: $('#models'),
+                tpl: _.template('<li><%= s %></li>'),
+
+                render: function()
+                {
+                        this.$el.html(this.tpl({
+                                s: JSON.stringify(this.model.toJSON())
+                        }));
+                }
+        });
+
+        var modelView = new ModelView({
+                model: modelModel
+        });
+
+        modelView.render();
+});
 </script>
 </head>
 <body>
+        <ul id="models"></ul>
 </body>
 </html>
