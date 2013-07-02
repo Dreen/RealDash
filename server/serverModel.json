@@ -17,6 +17,11 @@
 				"method": "postParam",
 				"args": [ "bar" ],
 				"timer": 20
+			}, {
+				"sig": "TestAPI::getRandom()",
+				"method": "getRandom",
+				"args": [ ],
+				"timer": 5
 			}
 		]
 	}
