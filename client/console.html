@@ -15,11 +15,9 @@ socket.on('connect', function ()
         });
 });
 
-var APIModel, APICollection, APIView;
-
 $(function()
 {
-        APIModel = Backbone.Model.extend({
+        var APIModel = Backbone.Model.extend({
                 defaults: {
                         "name": "",
                         "file": "",
@@ -30,7 +28,11 @@ $(function()
 
                 initialize: function()
                 {
-                        console.log('init api');
+                        var mirror = this;
+                        this.on('change', function()
+                        {
+                                console.log('API %s changed', mirror.get('name'));
+                        });
                 },
 
                 url: function()
@@ -60,12 +62,13 @@ $(function()
                 ]
         });
 
-        APICollection = Backbone.Collection.extend({
-                model: APIModel,
-                url: '/model'
+        var APICollection = Backbone.Collection.extend({
+                model: APIModel
         });
 
-        APIView = Backbone.View.extend({
+        var apiCollection = new APICollection([apiModel]);
+
+        var APIView = Backbone.View.extend({
                 tagname: 'li',
                 el: $('#models'),
                 tpl: _.template('<li><%= s %></li>'),
@@ -87,6 +90,9 @@ $(function()
 </script>
 </head>
 <body>
-        <ul id="models"></ul>
+<h1>APIs:</h1>
+<ul id="models"></ul>
+<h1>Jobs:</h1>
+
 </body>
 </html>
